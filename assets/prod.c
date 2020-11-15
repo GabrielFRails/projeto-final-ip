@@ -1,3 +1,6 @@
+//aqui é feito alterações e teste, antes de propiamente mandar para a main.c
+// ademais aqui é o lugar pft para testar coisa sem zikar o código que funciona (nunca se sabe)
+
 #include <stdio.h>
 //#include <conio.h>
 //#include <windows.h>
@@ -31,13 +34,13 @@ int main(){
     char us = 'a';
 
     //while(1){
-        printf("Bem vindo ser vivo altamente evoluído ou não\nDigite uma tecla para continuarmos\n");
+        printf("Bem vindo ser vivo altamente evoluido ou nao\nDigite uma tecla para continuarmos\n");
         printf("1. Localizar um dia\n");
-        printf("2. Exibir todos os dias do mês\n");
+        printf("2. Exibir todos os dias do mes\n");
         printf("3. Adicionar lembrete\n");
         printf("4. Sair do Programa\n");
         //scanf("%d", &entrada);
-        printf("dia da semana: %s\n", dia_semana(10));
+        //printf("dia da semana: %s\n", dia_semana(10));
 /*        switch(entrada){
             case 1:
             case 2:
@@ -46,10 +49,10 @@ int main(){
                 exit(0);
         }
     }*/
-    lembrete.dd = 31;
-    lembrete.mm = 8;
-    scanf("%[^\n]", lembrete.nota);
-    printf("dia: %d\nmes: %d\n e nota: %s\n", lembrete.dd, lembrete.mm, lembrete.nota);
+    scanf("%d%d%d", &data.dd, &data.mm, &data.yy);
+    int result = dis_semana(data.dd, data.mm, data.yy);
+    printf("dia: %d mm: %d ano: %d\nresultado function: %d e dia da semana: %s\n", 
+            data.dd, data.mm, data.yy, result, dia_semana(result));
     return 0;
 }
 
@@ -101,4 +104,5 @@ int dis_semana(int dd, int mm, int aa){
     d = q%7;
 
     return d;
+
 }
