@@ -146,7 +146,7 @@ void Add_note(){
     FILE *p;
     int ano;
     p = fopen("notes.dat", "ab+");
-    system("clear");
+    //system("clear");
     mvaddstr(0,0,"Digite uma data(DD/MM) para o ano de 2020");
     mvscanw(1,0, "%d%d", &L.dd, &L.mm);
     /*while(1){
