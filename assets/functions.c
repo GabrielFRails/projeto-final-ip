@@ -1,6 +1,21 @@
 #include <ncurses.h>
 #include "functions.h"
 
+struct Data{
+    int dd;
+    int mm;
+    int yy;
+};
+struct Data data;
+
+struct Lembrete{
+    int dd;
+    int mm;
+    char nota[51];
+};
+
+struct Lembrete L;
+
 int ano_bissexto(int ano){
     if(ano % 400 == 0 || (ano % 100 != 0 && ano % 4 == 0))
     return 1; // ano bissexto
@@ -125,4 +140,63 @@ void print_current_month(int mm, int yy){
             else mvprintw(i+3,j*3,"%d", mes[i][j]);
         }
     }
+}
+
+void Add_note(){
+    FILE *p;
+    int ano;
+    p = fopen("notes.dat", "ab+");
+    system("clear");
+    mvaddstr(0,0,"Digite uma data(DD/MM) para o ano de 2020");
+    mvscanw(1,0, "%d%d", &L.dd, &L.mm);
+    /*while(1){
+        scanf("%d%d", &L.dd, &L.mm);
+        if((L.dd>numero_dias(L.mm, 2000)) || (L.mm>12 || L.mm<1)) printf("Insira uma data válida(DD/MM): ");
+        else break;
+    }*/
+    scanf("%*c");
+    mvaddstr(2,0,"Digite a nota(máx 50 caracteres): ");
+    mvscanw(3,0, "%[^\n]", L.nota);
+    if(fwrite(&L, sizeof(L), 1, p)){
+        mvaddstr(4,0, "Nota salva com sucesso\n");
+        fclose(p);
+    } else mvaddstr(4,0, "Erro ao salvar a nota\n");
+    printf("Precione qualqual tecla para voltar ao menu...");
+    getchar();
+}
+
+int check_note(int dd, int mm){
+    FILE *p;
+    p = fopen("notes.dat", "rb");
+    if(p==NULL) mvaddstr(1,0, "Não foi possível abrir o arquivo\n");
+
+    while(fread(&L,sizeof(L),1,p) == 1){
+        if(L.dd == dd && L.mm == mm){
+            fclose(p);
+            return 1;
+        }
+    }
+    fclose(p);
+    return 0;
+}
+
+void imprime_note(int mm){
+    FILE *p;
+    int i = 0, achou = 0;
+    p = fopen("notes.dat", "rb");
+
+    if(p==NULL) printf("Erro ao abrir o arquivo\n");
+
+    while(fread(&L, sizeof(L),1,p)==1){
+        if(L.mm==mm){
+            printf("Nota %d dia %d: %s\n", i, L.dd, L.nota);
+            achou = 1;
+            i++;
+        }
+    }
+    if(achou==0)printf("Esse mês não possui nenhum lembrete\n");
+
+    fclose(p);
+    printf("Precione qualqual tecla para voltar ao menu...");
+    getchar();
 }

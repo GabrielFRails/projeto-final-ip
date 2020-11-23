@@ -102,6 +102,8 @@ int main(){
                 break;
 
             case '3':
+                Add_note();
+                break;
             case '4':
             case '5': 
                 ref = 1;
