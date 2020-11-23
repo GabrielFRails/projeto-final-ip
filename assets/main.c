@@ -1,7 +1,7 @@
 #include <stdio.h>
-//#include <conio.h>
-//#include <windows.h>
+#include <stdlib.h>
 #include <locale.h>
+#include <ncurses.h>
 
 struct Data{
     int dd;
@@ -16,59 +16,118 @@ struct Lembrete{
     char nota[51];
 };
 
-struct Lembrete lembrete;
+struct Lembrete L;
 
 int ano_bissexto(int ano); //função para verificar se um ano é bissexto ou não
 int numero_dias(int mes, int ano); //função para ver quantos dias tem um mês
 void incrementar_mes(int *mm, int *yy); //função para incrementar o valor de um mês 
 void decrementar_mes(int *mm, int *yy); //função para decrementar o valor de um mês
-void print_mes(int mm, int yy); //not done yet
-void print_current_month(int mm, int yy); //not done yet
+//void print_mes(int mm, int yy); not done yet
+void print_current_month(int mm, int yy); //função que imprime o calendário do mês na tela
 char *dia_semana(int dia); //função para retornar o dia da semana de determinado dia
 int dis_semana(int dd, int mm, int aa); //função para saber qual dia da semana é de acordo com a data do usuário
+void Add_note();
+int check_note(int dd, int mm);
+void imprime_note(int mm, int yy);
 
 int main(){
     setlocale(LC_ALL, "Portuguese"); //desse modo podemos imprimir caracteres especiais da língua sem problemas
+    initscr();
+    keypad(stdscr, TRUE);
+    start_color();
+    noecho();
+    cbreak();
+    curs_set(0);
+
     int entrada = 0;
     char us = 'a';
-    int ref = 0;
+    int alteraMes = 0;
+    int ref = 0, i = 0;
 
     while(ref==0){
-        printf("Bem vindo ser vivo altamente evoluido ou nao\nDigite uma tecla para continuarmos\n");
-        printf("1. Localizar um dia\n");
-        printf("2. Exibir todos os dias do mes\n");
-        printf("3. Adicionar lembrete(s)\n");
-        printf("4. Sair do Programa\n");
-        scanf("%d", &entrada);
-        //printf("dia da semana: %s\n", dia_semana(10));
+        wclear(stdscr);
+        mvaddstr(0,0,"Bem vindo, ser vivo altamente evoluído (ou não) c:");
+        mvaddstr(1,0,"Escolha uma opção para continuarmos:");
+        mvaddstr(2,0,"1. Localizar um dia");
+        mvaddstr(3,0,"2. Exibir todos os dias do mês");
+        mvaddstr(4,0,"3. Adicionar lembrete(s)");
+        mvaddstr(5,0,"4. Visualizar lembrete(s)");
+        mvaddstr(6,0,"5. Sair do Programa");
+        entrada = getch();
+    
         switch(entrada){
-            case 1:
-                printf("Digite uma data (DD / MM / AAAA)\n");
-                scanf("%d%d%d%*c", &data.dd, &data.mm, &data.yy);
-                printf("dia: %d mes: %d e ano: %d\n", data.dd, data.mm, data.yy);
+            case '1':
+                mvaddstr(8,0,"Digite uma data (DD MM AAAA)");
+                echo();
+                curs_set(1);
+                mvscanw(9,0,"%d %d %d", &data.dd, &data.mm, &data.yy);
+                noecho();
+                curs_set(0);
+                wclear(stdscr);
+                mvprintw(0,0,"Dia: %d Mês: %d e Ano: %d", data.dd, data.mm, data.yy);
                 int temp = dis_semana(data.dd, data.mm, data.yy);
-                printf("Dia da semana correspondente: %s\n", dia_semana(temp));
-                printf("Precione qualquer tecla para continuar\n");
-                getchar();
-                printf("\n");
+                mvprintw(1,0,"Dia da semana correspondente: %s", dia_semana(temp));
+                mvaddstr(3,0,"Pressione qualquer tecla para continuar");
+                getch();
                 break;
-            case 2:
-                printf("Digite o mes e o ano (MM/AAAA)");
-                scanf("%d%d%*c", &data.mm, &data.yy);
-                /*a lógica aqui é ter uma função que imprime o mês e verificar se o user quer imprimir
-                    mais meses - próx e anterior*/
-                while(us!='e'){
-                    
-                }
 
-            case 3:
-            case 4: 
+            case '2':
+                mvaddstr(8,0,"Digite o mês e o ano (MM AAAA)");
+                echo();
+                curs_set(1);
+                mvscanw(9,0,"%d%d", &data.mm, &data.yy);
+                noecho();
+                curs_set(0);
+                while(data.mm<1||data.mm>12){
+                    wclear(stdscr);
+                    mvaddstr(0,0,"Entrada inválida! Digite o mês e o ano:");
+                    echo();
+                    curs_set(1);
+                    mvscanw(1,0,"%d%d", &data.mm, &data.yy);
+                    noecho();
+                    curs_set(0);
+                }
+                wclear(stdscr);
+                print_current_month(data.mm,data.yy);
+                while(alteraMes!='s'){
+                    printf("\n");
+                    mvaddstr(10,0,"Seta para a esquerda para ver o mês anterior");
+                    mvaddstr(11,0,"Seta para a direita para ver o próximo mês");
+                    mvaddstr(12,0,"Digite \"s\" para voltar ao menu principal");
+                    alteraMes = getch();
+                    switch(alteraMes){
+                        case KEY_LEFT: decrementar_mes(&data.mm, &data.yy);
+                                  wclear(stdscr);
+                                  print_current_month(data.mm, data.yy);
+                                  break;
+                        case KEY_RIGHT: incrementar_mes(&data.mm, &data.yy);
+                                  wclear(stdscr);
+                                  print_current_month(data.mm, data.yy);
+                                  break;
+                        case 's':          
+                        case 'S': alteraMes='s';
+                                  break;
+                    }
+                }
+                break;
+
+            case '3':
+                mvaddstr(0,0,"nota ok");
+                Add_note();
+                break;
+            case '4':
+                mvprintw(1,0,"%d\n", check_note(31,11)); //somente para fins de teste
+                break;
+                
+            case '5': 
                 ref = 1;
-            default:
-                printf("Insira uma entrada valida camarada\n");
         }
     }
-    printf("\nObrigado por usar o nosso programa - by: Gabriel & Tallya\n");
+    system("clear");
+    mvaddstr(0,0,"Obrigado por usar o nosso programa - by: Gabriel & Tallya");
+    mvaddstr(2,0,"Pressione uma tecla para encerrar");
+    getch();
+    endwin();
     return 0;
 }
 
@@ -139,20 +198,121 @@ void decrementar_mes(int *mm, int *yy){
 }
 
 void print_current_month(int mm, int yy){
-    printf("\n");
-    switch(mm){
-        case 1: printf("Janeiro");
-        case 2: printf("Fevereiro");
-        case 3: printf("Marco");
-        case 4: printf("Abril");
-        case 5: printf("Maio");
-        case 6: printf("Junho");
-        case 7: printf("Julho");
-        case 8: printf("Agosto");
-        case 9: printf("Setembro");
-        case 10: printf("Outubro");
-        case 11: printf("Novembro");
-        case 12: printf("Dezembro");
+    int mes[6][7];
+    int dia1, nDias, i, j, k;
+    dia1 = dis_semana(1,mm,yy);
+    nDias = numero_dias(mm,yy);
+    for(i=0;i<6;i++){
+        for(j=0;j<7;j++){
+            mes[i][j]=0;
+        }
     }
-    printf(" de %d\n", yy);
+    k=1;
+    i=0;
+    j=dia1;
+    while(k<=nDias){
+        mes[i][j]=k;
+        j++;
+        k++;
+        if(j==7){
+            j=0;
+            i++;
+        }
+    }
+    printf("\n");
+    mvprintw(0,0,"Mês: %d  Ano: %d", mm, yy);
+    switch(mm){
+        case 1: mvprintw(1,0,"Janeiro");
+                break;
+        case 2: mvprintw(1,0,"Fevereiro");
+                break;
+        case 3: mvprintw(1,0,"Março");
+                break;
+        case 4: mvprintw(1,0,"Abril");
+                break;
+        case 5: mvprintw(1,0,"Maio");
+                break;
+        case 6: mvprintw(1,0,"Junho");
+                break;
+        case 7: mvprintw(1,0,"Julho");
+                break;
+        case 8: mvprintw(1,0,"Agosto");
+                break;
+        case 9: mvprintw(1,0,"Setembro");
+                break;
+        case 10: mvprintw(1,0,"Outubro");
+                break;
+        case 11: mvprintw(1,0,"Novembro");
+                break;
+        case 12: mvprintw(1,0,"Dezembro");
+                break;
+    }
+    mvprintw(2,0,"D  S  T  Q  Q  S  S");
+    for(i=0;i<6;i++){
+        for(j=0;j<7;j++){
+            if(mes[i][j]==0) mvprintw(i+3,j*3,"x");
+            else if(mes[i][j]<10) mvprintw(i+3,j*3,"%d", mes[i][j]);
+            else mvprintw(i+3,j*3,"%d", mes[i][j]);
+        }
+    }
+
+}
+
+void Add_note(){
+    FILE *p;
+    int ano;
+    p = fopen("notes.dat", "ab+");
+    system("clear");
+    mvaddstr(0,0,"Digite uma data(DD/MM) para o ano de 2020");
+    mvscanw(1,0, "%d%d", &L.dd, &L.mm);
+    /*while(1){
+        scanf("%d%d", &L.dd, &L.mm);
+        if((L.dd>numero_dias(L.mm, 2000)) || (L.mm>12 || L.mm<1)) printf("Insira uma data válida(DD/MM): ");
+        else break;
+    }*/
+    scanf("%*c");
+    mvaddstr(2,0,"Digite a nota(máx 50 caracteres): ");
+    mvscanw(3,0, "%[^\n]", L.nota);
+    if(fwrite(&L, sizeof(L), 1, p)){
+        mvaddstr(4,0, "Nota salva com sucesso\n");
+        fclose(p);
+    } else mvaddstr(4,0, "Erro ao salvar a nota\n");
+    printf("Precione qualqual tecla para voltar ao menu...");
+    getchar();
+}
+
+int check_note(int dd, int mm){
+    FILE *p;
+    p = fopen("notes.dat", "rb");
+    if(p==NULL) mvaddstr(1,0, "Não foi possível abrir o arquivo\n");
+
+    while(fread(&L,sizeof(L),1,p) == 1){
+        if(L.dd == dd && L.mm == mm){
+            fclose(p);
+            return 1;
+        }
+    }
+    fclose(p);
+    return 0;
+}
+
+void imprime_note(int mm, int yy){
+    FILE *p;
+    int i = 0, achou = 0;
+    p = fopen("notes.dat", "rb");
+
+    if(p==NULL) printf("Erro ao abrir o arquivo\n");
+
+    while(fread(&L, sizeof(L),1,p)==1){
+        if(L.mm==mm){
+            printf("Nota %d dia %d: %s\n", i, L.dd, L.nota);
+            achou = 1;
+            i++;
+        }
+    }
+    if(achou==0)printf("Esse mês não possui nenhum lembrete\n");
+
+    fclose(p);
+    printf("Precione qualqual tecla para voltar ao menu...");
+    getchar();
 }
