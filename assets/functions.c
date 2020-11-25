@@ -146,29 +146,39 @@ void Add_note(){
     FILE *p;
     int ano;
     p = fopen("notes.dat", "ab+");
-    //system("clear");
-    mvaddstr(0,0,"Digite uma data(DD/MM) para o ano de 2020");
+    wclear(stdscr);
+    mvaddstr(0,0,"Digite uma data (DD MM) para o ano atual");
+    echo();
+    curs_set(1);
     mvscanw(1,0, "%d%d", &L.dd, &L.mm);
-    /*while(1){
-        scanf("%d%d", &L.dd, &L.mm);
-        if((L.dd>numero_dias(L.mm, 2000)) || (L.mm>12 || L.mm<1)) printf("Insira uma data válida(DD/MM): ");
+    curs_set(0);
+    noecho();
+    while(1){
+        if((L.dd>numero_dias(L.mm, 2000)) || (L.mm>12 || L.mm<1)){
+            wclear(stdscr);
+            mvprintw(0,0,"Insira uma data válida(DD/MM): ");
+            mvscanw(1,0,"%d%d", &L.dd, &L.mm);
+        } 
         else break;
-    }*/
-    scanf("%*c");
-    mvaddstr(2,0,"Digite a nota(máx 50 caracteres): ");
+    }
+    mvaddstr(2,0,"Digite a nota (máx. 50 caracteres): ");
+    echo();
+    curs_set(1);
     mvscanw(3,0, "%[^\n]", L.nota);
+    curs_set(0);
+    noecho();
     if(fwrite(&L, sizeof(L), 1, p)){
-        mvaddstr(4,0, "Nota salva com sucesso\n");
+        mvaddstr(5,0, "Nota salva com sucesso!");
         fclose(p);
-    } else mvaddstr(4,0, "Erro ao salvar a nota\n");
-    printf("Precione qualqual tecla para voltar ao menu...");
-    getchar();
+    } else mvaddstr(5,0, "Erro ao salvar a nota!");
+    mvprintw(7,0,"Pressione qualquer tecla para voltar ao menu...");
+    getch();
 }
 
 int check_note(int dd, int mm){
     FILE *p;
     p = fopen("notes.dat", "rb");
-    if(p==NULL) mvaddstr(1,0, "Não foi possível abrir o arquivo\n");
+    if(p==NULL) mvaddstr(1,0, "Não foi possível abrir o arquivo");
 
     while(fread(&L,sizeof(L),1,p) == 1){
         if(L.dd == dd && L.mm == mm){
@@ -185,18 +195,20 @@ void imprime_note(int mm){
     int i = 0, achou = 0;
     p = fopen("notes.dat", "rb");
 
-    if(p==NULL) printf("Erro ao abrir o arquivo\n");
+    wclear(stdscr);
+
+    if(p==NULL) mvprintw(0,0,"Erro ao abrir o arquivo");
 
     while(fread(&L, sizeof(L),1,p)==1){
         if(L.mm==mm){
-            printf("Nota %d dia %d: %s\n", i, L.dd, L.nota);
+            mvprintw(0,0,"Nota %d dia %d: %s", i, L.dd, L.nota);
             achou = 1;
             i++;
         }
     }
-    if(achou==0)printf("Esse mês não possui nenhum lembrete\n");
+    if(achou==0) mvprintw(0,0,"Esse mês não possui nenhum lembrete");
 
     fclose(p);
-    printf("Precione qualqual tecla para voltar ao menu...");
-    getchar();
+    mvprintw(2,0,"Pressione qualqual tecla para voltar ao menu...");
+    getch();
 }
