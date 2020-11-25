@@ -60,30 +60,16 @@ char *dia_semana(int dia);
  * @param aa (Ano ao qual o dia e o mês a serem verificados pertencem)
  * @return Um inteiro de acordo com o dia da semana encontrado
  */
-int dis_semana(int dd, int mm, int aa);
+int dis_semana(int dd, int mm, int aa); 
 
 /**
- * @brief Função para salvar em uma saída .dat um lembrete
+ * @brief Adiciona um lembrete
+ * 
  */
-
 void Add_note();
 
-/**
- * @brief Função para verificar se determinado dia tem um lembrete salvo
- * 
- * @param dd (Dia a ser verificado)
- * @param mm (Mês ao qual o dia a ser verificado pertence)
- * @return 1 caso o dia tenha um lembrete e 0 caso contrário
- */
 int check_note(int dd, int mm);
 
-/**
- * @brief Função para imprimir um Lembrete
- * 
- * @param mm (Mês ao qual o dia a ser verificado pertence)
- * @param yy (Ano ao qual o dia e o mês a serem verificados pertencem)
- * @return Os lembretes do mês selecionado.
- */
 void imprime_note(int mm);
 
 #endif
