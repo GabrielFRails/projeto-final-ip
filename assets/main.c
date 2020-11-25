@@ -80,7 +80,6 @@ int main(){
                 wclear(stdscr);
                 print_current_month(data.mm,data.yy);
                 while(alteraMes!='s'){
-                    printf("\n");
                     mvaddstr(10,0,"Seta para a esquerda para ver o mês anterior");
                     mvaddstr(11,0,"Seta para a direita para ver o próximo mês");
                     mvaddstr(12,0,"Digite \"s\" para voltar ao menu principal");
@@ -101,13 +100,9 @@ int main(){
                 }
                 break;
 
-            case '3':
-                Add_note();
-                mvprintw(1,0,"%d",check_note(31,10));
-                break;
+            case '3': Add_note();
+                      break;
             case '4':
-                
-                break;
             case '5': 
                 ref = 1;
         }
