@@ -201,7 +201,7 @@ void imprime_note(int mm){
 
     while(fread(&L, sizeof(L),1,p)==1){
         if(L.mm==mm){
-            mvprintw(0,0,"Nota %d dia %d: %s", i, L.dd, L.nota);
+            mvprintw(0+i,0,"Nota %d dia %d: %s", i+1, L.dd, L.nota);
             achou = 1;
             i++;
         }
@@ -209,6 +209,6 @@ void imprime_note(int mm){
     if(achou==0) mvprintw(0,0,"Esse mês não possui nenhum lembrete");
 
     fclose(p);
-    mvprintw(2,0,"Pressione qualqual tecla para voltar ao menu...");
+    mvprintw(i,0,"Pressione qualqual tecla para voltar ao menu...");
     getch();
 }

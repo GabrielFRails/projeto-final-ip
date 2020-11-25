@@ -103,6 +103,8 @@ int main(){
             case '3': Add_note();
                       break;
             case '4':
+                    imprime_note(8);
+                    break;
             case '5': 
                 ref = 1;
         }
