@@ -35,6 +35,10 @@ void incrementar_mes(int *mm, int *yy);
  */
 void decrementar_mes(int *mm, int *yy);
 
+void incrementar_ano(int *yy);
+
+void decrementar_ano(int *yy);
+
 /**
  * @brief Função que imprime o calendário do mês na tela
  * 

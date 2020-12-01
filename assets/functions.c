@@ -82,6 +82,16 @@ void decrementar_mes(int *mm, int *yy){
     }
 }
 
+void incrementar_ano(int *yy){
+    (*yy)++;
+    if(*yy < 1900) (*yy) = 1900;
+}
+
+void decrementar_ano(int *yy){
+    (*yy)--;
+    if(*yy > 2100) (*yy) = 2100;
+}
+
 void print_current_month(int mm, int yy){
     int mes[6][7];
     int dia1, nDias, i, j, k;
@@ -192,13 +202,21 @@ int check_note(int dd, int mm){
 
 void imprime_note(int mm){
     FILE *p;
-    int i = 0, achou = 0;
+    int i = 0, achou = 0, contador = 0;
     p = fopen("notes.dat", "rb");
 
     wclear(stdscr);
 
     if(p==NULL) mvprintw(0,0,"Erro ao abrir o arquivo");
 
+    while(fread(&L, sizeof(L),1,p)==1){
+        if(L.mm==mm) contador++;
+    }
+
+    int dias[contador];
+
+    //mvprintw(1,0,"valor de contador: %d", contador);
+    i = 0;
     while(fread(&L, sizeof(L),1,p)==1){
         if(L.mm==mm){
             mvprintw(0+i,0,"Nota %d dia %d: %s", i+1, L.dd, L.nota);

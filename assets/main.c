@@ -4,6 +4,12 @@
 #include <ncurses.h>
 #include "functions.h"
 
+/*
+    1° coisa: colocar a função imprime_nota() na option 2 - ok
+    2° coisa: função para incrementar e decremetar o ano - ok
+    3° coisa: começar o sistema de ordenação de lembretes
+*/
+
 struct Data{
     int dd;
     int mm;
@@ -82,7 +88,10 @@ int main(){
                 while(alteraMes!='s'){
                     mvaddstr(10,0,"Seta para a esquerda para ver o mês anterior");
                     mvaddstr(11,0,"Seta para a direita para ver o próximo mês");
-                    mvaddstr(12,0,"Digite \"s\" para voltar ao menu principal");
+                    mvaddstr(12,0,"Seta para cima para ver o próximo ano");
+                    mvaddstr(13,0,"Seta para baixo para ver o ano anterior");
+                    mvaddstr(14,0,"Digite \"v\" para ver as notas do mês");
+                    mvaddstr(15,0,"Digite \"s\" para voltar ao menu principal");
                     alteraMes = getch();
                     switch(alteraMes){
                         case KEY_LEFT: decrementar_mes(&data.mm, &data.yy);
@@ -93,6 +102,17 @@ int main(){
                                   wclear(stdscr);
                                   print_current_month(data.mm, data.yy);
                                   break;
+                        case KEY_UP: incrementar_ano(&data.yy);
+                            wclear(stdscr);
+                            print_current_month(data.mm, data.yy);
+                             break;
+                        case KEY_DOWN: decrementar_ano(&data.yy);
+                            wclear(stdscr);
+                            print_current_month(data.mm, data.yy);
+                             break;
+                        case 'v': wclear(stdscr);
+                                imprime_note(data.mm);
+                                break;
                         case 's':          
                         case 'S': alteraMes='s';
                                   break;
@@ -103,7 +123,7 @@ int main(){
             case '3': Add_note();
                       break;
             case '4':
-                    imprime_note(8);
+                    imprime_note(12);
                     break;
             case '5': 
                 ref = 1;
