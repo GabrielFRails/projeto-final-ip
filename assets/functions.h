@@ -72,8 +72,32 @@ int dis_semana(int dd, int mm, int aa);
  */
 void Add_note();
 
-int check_note(int dd, int mm);
+int check_note(int dd, int mm, int yy);
 
-void imprime_note(int mm);
+void imprime_note(int mm, int yy);
+
+/**
+ * @brief Compara se a data e hora inseridas pelo usuário estão no passado ou futuro
+ * 
+ * @param dd 
+ * @param mm 
+ * @param yy 
+ * @param hh 
+ * @param min 
+ * @return int 0 se estiver no passado, 2 se não
+ */
+int compara_data_hora(int dd, int mm, int yy, int hh, int min);
+
+/**
+ * @brief Verifica se uma data e hora são válidas
+ * 
+ * @param dd 
+ * @param mm 
+ * @param yy 
+ * @param hh 
+ * @param min 
+ * @return int 0 se não for válida, 1 se sim
+ */
+int verifica_data_hora_valida(int dd, int mm, int yy, int hh, int min);
 
 #endif
