@@ -17,13 +17,12 @@ struct Data{
 };
 struct Data data;
 
-struct Lembrete{
-    int dd;
+struct Hora{
+    int hh;
     int mm;
-    char nota[51];
 };
 
-struct Lembrete lembrete;
+struct Hora hora;
 
 
 int main(){
@@ -111,7 +110,7 @@ int main(){
                             print_current_month(data.mm, data.yy);
                              break;
                         case 'v': wclear(stdscr);
-                                imprime_note(data.mm);
+                                imprime_note(data.mm, data.yy);
                                 break;
                         case 's':          
                         case 'S': alteraMes='s';
@@ -123,7 +122,13 @@ int main(){
             case '3': Add_note();
                       break;
             case '4':
-                    imprime_note(12);
+                    mvaddstr(0,0,"Digite uma data (DD/MM/AAAA)");
+                    echo();
+                    curs_set(1);
+                    mvscanw(1,0, "%d/%d/%d", &data.dd, &data.mm, &data.yy);
+                    noecho();
+                    curs_set(0);
+                    //imprime_note(data.mm, data.yy);
                     break;
             case '5': 
                 ref = 1;
