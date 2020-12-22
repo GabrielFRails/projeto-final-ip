@@ -1,16 +1,25 @@
 #include <ncurses.h>
 #include "functions.h"
+#include <time.h>
 
 struct Data{
     int dd;
     int mm;
     int yy;
 };
+
 struct Data data;
 
-struct Lembrete{
-    int dd;
+struct Hora{
+    int hh;
     int mm;
+};
+
+struct Hora hora;
+
+struct Lembrete{
+    struct Data dataL;
+    struct Hora horaL;
     char nota[51];
 };
 
@@ -154,23 +163,57 @@ void print_current_month(int mm, int yy){
 
 void Add_note(){
     FILE *p;
-    int ano;
-    p = fopen("notes.dat", "ab+");
+    char nome_arq[8];
+    int ano, ch=0;
+
     wclear(stdscr);
-    mvaddstr(0,0,"Digite uma data (DD MM) para o ano atual");
+    mvaddstr(0,0,"Digite uma data e hora (DD/MM/AAAA HH:MM)");
     echo();
     curs_set(1);
-    mvscanw(1,0, "%d%d", &L.dd, &L.mm);
+    mvscanw(1,0, "%d/%d/%d %d:%d", &L.dataL.dd, &L.dataL.mm, &L.dataL.yy, &L.horaL.hh, &L.horaL.mm);
     curs_set(0);
     noecho();
     while(1){
-        if((L.dd>numero_dias(L.mm, 2000)) || (L.mm>12 || L.mm<1)){
+        //verifica se a data e a hora são válidas
+        if(verifica_data_hora_valida(L.dataL.dd, L.dataL.mm, L.dataL.yy, L.horaL.hh, L.horaL.mm)==0){
             wclear(stdscr);
-            mvprintw(0,0,"Insira uma data válida(DD/MM): ");
-            mvscanw(1,0,"%d%d", &L.dd, &L.mm);
+            mvaddstr(0,0,"Data/hora inválida!");
+            mvaddstr(1,0,"Pressione 't' para inserir data e hora novamente ou 'v' para voltar ao menu.");
+            ch=0;
+            while(ch!='t' && ch!='v') ch = getch();
+            if(ch=='v') return;
+            else{
+                wclear(stdscr);
+                mvprintw(0,0,"Insira uma data/hora válida (DD/MM/AAAA HH:MM): ");
+                echo();
+                curs_set(1);
+                mvscanw(1,0,"%d/%d/%d %d:%d", &L.dataL.dd, &L.dataL.mm, &L.dataL.yy, &L.horaL.hh, &L.horaL.mm);
+                curs_set(0);
+                noecho();
+            }
         } 
+        //verifica se a data e a hora estão ou não no passado
+        else if(compara_data_hora(L.dataL.dd, L.dataL.mm, L.dataL.yy, L.horaL.hh, L.horaL.mm)==0){
+            wclear(stdscr);
+            mvaddstr(0,0, "Não é possível criar lembrete em uma data/hora passada!");
+            mvaddstr(1,0,"Pressione 't' para inserir data e hora novamente ou 'v' para voltar ao menu.");
+            ch=0;
+            while(ch!='t' && ch!='v') ch = getch();
+            if(ch=='v') return;
+            else{
+                wclear(stdscr);
+                mvprintw(0,0,"Insira uma data/hora válida (DD/MM/AAAA HH:MM): ");
+                echo();
+                curs_set(1);
+                mvscanw(1,0,"%d/%d/%d %d:%d", &L.dataL.dd, &L.dataL.mm, &L.dataL.yy, &L.horaL.hh, &L.horaL.mm);
+                curs_set(0);
+                noecho();
+            }
+        }
         else break;
     }
+    sprintf(nome_arq, "%d.dat", L.dataL.yy);
+    p = fopen(nome_arq, "ab+");
     mvaddstr(2,0,"Digite a nota (máx. 50 caracteres): ");
     echo();
     curs_set(1);
@@ -185,13 +228,15 @@ void Add_note(){
     getch();
 }
 
-int check_note(int dd, int mm){
+int check_note(int dd, int mm, int yy){
     FILE *p;
-    p = fopen("notes.dat", "rb");
+    char nome_arq[8];
+    sprintf(nome_arq, "%d.dat", yy);
+    p = fopen(nome_arq, "rb");
     if(p==NULL) mvaddstr(1,0, "Não foi possível abrir o arquivo");
 
     while(fread(&L,sizeof(L),1,p) == 1){
-        if(L.dd == dd && L.mm == mm){
+        if(L.dataL.dd == dd && L.dataL.mm == mm && L.dataL.yy == yy){
             fclose(p);
             return 1;
         }
@@ -200,26 +245,33 @@ int check_note(int dd, int mm){
     return 0;
 }
 
-void imprime_note(int mm){
+void imprime_note(int mm, int yy){
     FILE *p;
     int i = 0, achou = 0, contador = 0;
-    p = fopen("notes.dat", "rb");
+    char nome_arq[8];
+    sprintf(nome_arq, "%d.dat", yy);
+    p = fopen(nome_arq, "rb");
 
     wclear(stdscr);
 
-    if(p==NULL) mvprintw(0,0,"Erro ao abrir o arquivo");
+    if(p==NULL){
+        mvprintw(0,0,"Erro ao abrir o arquivo");
+        return;
+    }
 
     while(fread(&L, sizeof(L),1,p)==1){
-        if(L.mm==mm) contador++;
+        if(L.dataL.mm==mm) contador++;
     }
 
     int dias[contador];
 
     //mvprintw(1,0,"valor de contador: %d", contador);
     i = 0;
+    fseek(p, 0, SEEK_SET);
     while(fread(&L, sizeof(L),1,p)==1){
-        if(L.mm==mm){
-            mvprintw(0+i,0,"Nota %d dia %d: %s", i+1, L.dd, L.nota);
+        if(L.dataL.mm==mm){
+            if(L.horaL.mm<10) mvprintw(0+i,0,"Nota %d, dia %d, hora %d:0%d: %s", i+1, L.dataL.dd, L.horaL.hh, L.horaL.mm, L.nota);
+            else mvprintw(0+i,0,"Nota %d, dia %d, hora %d:%d: %s", i+1, L.dataL.dd, L.horaL.hh, L.horaL.mm, L.nota);
             achou = 1;
             i++;
         }
@@ -229,4 +281,36 @@ void imprime_note(int mm){
     fclose(p);
     mvprintw(i,0,"Pressione qualqual tecla para voltar ao menu...");
     getch();
+}
+
+int compara_data_hora(int dd, int mm, int yy, int hh, int min){
+    time_t rawtime;
+    struct tm * data_hora;
+    time(&rawtime);
+    data_hora = localtime(&rawtime);
+
+    if(yy<data_hora->tm_year+1900) return 0;
+    else if(yy>data_hora->tm_year+1900) return 1;
+    else if(mm<data_hora->tm_mon+1) return 0;
+    else if(mm>data_hora->tm_mon+1) return 1;
+    else if(dd<data_hora->tm_mday) return 0;
+    else if(dd>data_hora->tm_mday) return 1;
+
+    if(yy==data_hora->tm_year+1900 && mm==data_hora->tm_mon+1 && dd==data_hora->tm_mday){
+        if(hh<data_hora->tm_hour) return 0;
+        else if(min<data_hora->tm_min) return 0;
+        else return 1;
+    }
+
+    return 1;
+}
+
+int verifica_data_hora_valida(int dd, int mm, int yy, int hh, int min){
+    if(numero_dias(mm,yy)==-1) return 0;
+    if(dd<1 || dd>numero_dias(mm,yy)) return 0;
+    if(mm<1 || mm>12) return 0;
+    if(hh<0 || hh>23) return 0;
+    if(min<0 || min>59) return 0;
+
+    return 1;
 }
