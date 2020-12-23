@@ -60,3 +60,5 @@ dkms.conf
 *.dat
 
 assets/test
+
+assets/main

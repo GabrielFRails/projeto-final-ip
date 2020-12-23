@@ -4,14 +4,6 @@
 #include <ncurses.h>
 #include "functions.h"
 
-struct Data{
-    int dd;
-    int mm;
-    int yy;
-};
-
-struct Data data;
-
 int main(){
     setlocale(LC_ALL, "Portuguese"); //desse modo podemos imprimir caracteres especiais da língua sem problemas
     initscr();
@@ -32,8 +24,10 @@ int main(){
         mvaddstr(2,0,"1. Localizar um dia");
         mvaddstr(3,0,"2. Exibir todos os dias do mês");
         mvaddstr(4,0,"3. Adicionar lembrete(s)");
-        mvaddstr(5,0,"4. Visualizar lembrete(s)");
-        mvaddstr(6,0,"5. Sair do Programa");
+        mvaddstr(5,0,"4. Visualizar lembrete(s) de um dia");
+        mvaddstr(6,0,"5. Visualizar lembrete(s) de um mês");
+        mvaddstr(7,0,"6. Sair do Programa");
+
         entrada = getch();
     
         switch(entrada){
@@ -123,7 +117,11 @@ int main(){
                     imprime_notes_dia(data.dd, data.mm, data.yy);
                     break;
             case '5': 
+                imprime_notes_mes(10, 2021);
+                break;
+            case '6':
                 ref = 1;
+                break;
         }
     }
     system("clear");

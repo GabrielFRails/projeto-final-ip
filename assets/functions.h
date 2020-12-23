@@ -1,6 +1,29 @@
 #ifndef __FUNCTIONS_H__
 #define __FUNCTIONS_H__
 
+typedef struct{
+    int dd;
+    int mm;
+    int yy;
+}Data;
+
+Data data;
+
+typedef struct {
+    int hh;
+    int mm;
+}Hora;
+
+Hora hora;
+
+typedef struct{
+    Data dataL;
+    Hora horaL;
+    char nota[51];
+}Lembrete;
+
+Lembrete L;
+
 /**
  * @brief Função que verifica se um ano é bissexto ou não
  * 
@@ -122,5 +145,9 @@ int compara_data_hora(int dd, int mm, int yy, int hh, int min);
  * @return int 0 se não for válida, 1 se sim
  */
 int verifica_data_hora_valida(int dd, int mm, int yy, int hh, int min);
+
+int verica_maiorDia(Lembrete* a, int i, int j);
+
+void swap_lembretes(Lembrete* a, int i, int j);
 
 #endif

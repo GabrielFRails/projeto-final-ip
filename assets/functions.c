@@ -1,29 +1,8 @@
 #include <ncurses.h>
 #include "functions.h"
 #include <time.h>
-
-struct Data{
-    int dd;
-    int mm;
-    int yy;
-};
-
-struct Data data;
-
-struct Hora{
-    int hh;
-    int mm;
-};
-
-struct Hora hora;
-
-struct Lembrete{
-    struct Data dataL;
-    struct Hora horaL;
-    char nota[51];
-};
-
-struct Lembrete L;
+#include <stdlib.h>
+#include <string.h>
 
 int ano_bissexto(int ano){
     if(ano % 400 == 0 || (ano % 100 != 0 && ano % 4 == 0))
@@ -247,9 +226,31 @@ int check_note(int dd, int mm, int yy){
     return 0;
 }
 
+int verica_maiorDia(Lembrete * a, int i, int j){
+    if(a[i].dataL.dd > a[j].dataL.dd) return 1; //caso o dia da posição i for maior que o da posição j
+    else if(a[i].dataL.dd == a[j].dataL.dd){ //verifica no caso a maior hora
+        if(a[i].horaL.hh > a[j].horaL.hh) return 1;
+        else if(a[i].horaL.hh == a[j].horaL.hh){
+            if(a[i].horaL.mm > a[j].horaL.mm) return 1;
+            else return 0;
+        } else return 0;
+    }else return 0; //caso contrário
+    
+}
+
+void swap_lembretes(Lembrete* a, int i, int j){
+    Lembrete *aux = (Lembrete *) malloc(sizeof(Lembrete));
+
+    aux[0] = a[i];
+    a[i] = a[j];
+    a[j] = aux[0];
+    free(aux);
+}
+
 void imprime_notes_mes(int mm, int yy){
     FILE *p;
-    int i = 0, achou = 0, contador = 0;
+    int i = 1, j, achou = 0, cont = 0;
+    Lembrete * lembrete = (Lembrete*) malloc(sizeof(Lembrete)), *ltemp;
     char nome_arq[8];
     sprintf(nome_arq, "%d.dat", yy);
     p = fopen(nome_arq, "rb");
@@ -260,14 +261,33 @@ void imprime_notes_mes(int mm, int yy){
         mvprintw(0,0,"Erro ao abrir o arquivo");
         return;
     }
+    int k = 1;
+    while(fread(&L, sizeof(L), 1, p) == 1){
+        if(L.dataL.yy == yy && L.dataL.mm == mm){
+            lembrete[k-1].dataL.dd = L.dataL.dd;
+            lembrete[k-1].dataL.mm = L.dataL.mm;
+            lembrete[k-1].dataL.yy = L.dataL.yy;
+            lembrete[k-1].horaL.hh = L.horaL.hh;
+            memcpy(lembrete[k-1].nota, L.nota, sizeof(L.nota)+1);
+            k++;
+            ltemp = (Lembrete*) realloc(lembrete, sizeof(Lembrete)*k);
+            lembrete = ltemp;
+            achou = 1;
+        }
+    }
 
-    //while(fread(&L, sizeof(L),1,p)==1){
-    //    if(L.dataL.mm==mm) contador++;
-    //}
+    for(i=0; i<k-1; i++){
+        for(j=i+1; j<k-1; j++){
+            if(verica_maiorDia(lembrete, i, j) == 1) swap_lembretes(lembrete, i, j);
+        }
+    }
+    
+    for(i=0; i<k-1; i++){
+        mvprintw(0+i,0,"Nota %d, dia %d, hora %d:0%d: %s", i+1, 
+        lembrete[i].dataL.dd, lembrete[i].horaL.hh, lembrete[i].horaL.mm, lembrete[i].nota);
+    }
 
-    //int dias[contador];
-
-    i = 0;
+    /*i = 0;
     fseek(p, 0, SEEK_SET);
     while(fread(&L, sizeof(L),1,p)==1){
         if(L.dataL.mm==mm){
@@ -276,17 +296,18 @@ void imprime_notes_mes(int mm, int yy){
             achou = 1;
             i++;
         }
-    }
+    }*/
     if(achou==0) mvprintw(0,0,"Esse mês não possui nenhum lembrete");
 
     fclose(p);
+    free(lembrete);
     mvprintw(i,0,"Pressione qualqual tecla para voltar ao menu...");
     getch();
 }
 
 void imprime_notes_dia(int dd, int mm, int yy){
     FILE *p;
-    int i = 0, achou = 0, contador = 0;
+    int i = 1, achou = 0, contador = 0;
     char nome_arq[8];
     sprintf(nome_arq, "%d.dat", yy);
     p = fopen(nome_arq, "rb");
@@ -298,13 +319,6 @@ void imprime_notes_dia(int dd, int mm, int yy){
         return;
     }
 
-    //while(fread(&L, sizeof(L),1,p)==1){
-    //    if(L.dataL.mm==mm) contador++;
-    //}
-
-    //int dias[contador];
-
-    i = 0;
     fseek(p, 0, SEEK_SET);
     while(fread(&L, sizeof(L),1,p)==1){
         if(L.dataL.dd==dd && L.dataL.mm==mm){
