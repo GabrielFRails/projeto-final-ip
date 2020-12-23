@@ -1,6 +1,29 @@
 #ifndef __FUNCTIONS_H__
 #define __FUNCTIONS_H__
 
+typedef struct{
+    int dd;
+    int mm;
+    int yy;
+}Data;
+
+Data data;
+
+typedef struct{
+    int hh;
+    int mm;
+}Hora;
+
+Hora hora;
+
+typedef struct{
+    Data dataL;
+    Hora horaL;
+    char nota[51];
+}Lembrete;
+
+Lembrete L;
+
 /**
  * @brief Função que verifica se um ano é bissexto ou não
  * 

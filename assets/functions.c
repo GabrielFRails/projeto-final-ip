@@ -2,29 +2,6 @@
 #include "functions.h"
 #include <time.h>
 
-struct Data{
-    int dd;
-    int mm;
-    int yy;
-};
-
-struct Data data;
-
-struct Hora{
-    int hh;
-    int mm;
-};
-
-struct Hora hora;
-
-struct Lembrete{
-    struct Data dataL;
-    struct Hora horaL;
-    char nota[51];
-};
-
-struct Lembrete L;
-
 int ano_bissexto(int ano){
     if(ano % 400 == 0 || (ano % 100 != 0 && ano % 4 == 0))
     return 1; // ano bissexto
@@ -247,7 +224,7 @@ int check_note(int dd, int mm, int yy){
 
 void imprime_note(int mm, int yy){
     FILE *p;
-    int i = 0, achou = 0, contador = 0;
+    int i = 0, achou = 0;
     char nome_arq[8];
     sprintf(nome_arq, "%d.dat", yy);
     p = fopen(nome_arq, "rb");
@@ -258,13 +235,6 @@ void imprime_note(int mm, int yy){
         mvprintw(0,0,"Erro ao abrir o arquivo");
         return;
     }
-
-    while(fread(&L, sizeof(L),1,p)==1){
-        if(L.dataL.mm==mm) contador++;
-    }
-
-    int dias[contador];
-
     //mvprintw(1,0,"valor de contador: %d", contador);
     i = 0;
     fseek(p, 0, SEEK_SET);

@@ -4,27 +4,6 @@
 #include <ncurses.h>
 #include "functions.h"
 
-/*
-    1° coisa: colocar a função imprime_nota() na option 2 - ok
-    2° coisa: função para incrementar e decremetar o ano - ok
-    3° coisa: começar o sistema de ordenação de lembretes
-*/
-
-struct Data{
-    int dd;
-    int mm;
-    int yy;
-};
-struct Data data;
-
-struct Hora{
-    int hh;
-    int mm;
-};
-
-struct Hora hora;
-
-
 int main(){
     setlocale(LC_ALL, "Portuguese"); //desse modo podemos imprimir caracteres especiais da língua sem problemas
     initscr();
