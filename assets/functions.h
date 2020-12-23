@@ -58,7 +58,19 @@ void incrementar_mes(int *mm, int *yy);
  */
 void decrementar_mes(int *mm, int *yy);
 
+/**
+ * @brief incrementa em 1 o ano passado como parâmetro
+ * 
+ * @param yy 
+ */
+
 void incrementar_ano(int *yy);
+
+/**
+ * @brief decremente em 1 o ano passado como parâmetro
+ * 
+ * @param yy 
+ */
 
 void decrementar_ano(int *yy);
 
@@ -146,7 +158,24 @@ int compara_data_hora(int dd, int mm, int yy, int hh, int min);
  */
 int verifica_data_hora_valida(int dd, int mm, int yy, int hh, int min);
 
+/**
+ * @brief Verifica se determinada parte da estrutura da posição i é maior que da posição j
+ * 
+ * @param a ponteiro para a estrutura
+ * @param i posição "1"
+ * @param j posição "2"
+ * @return 1 caso for maior e 0 caso contrário
+ */
+
 int verica_maiorDia(Lembrete* a, int i, int j);
+
+/**
+ * @brief inverte o valor de duas estruturas
+ * 
+ * @param a ponteiro para a estrutura lembrete
+ * @param i posição i
+ * @param j posição j
+ */
 
 void swap_lembretes(Lembrete* a, int i, int j);
 
