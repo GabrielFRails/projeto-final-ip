@@ -4,6 +4,14 @@
 #include <ncurses.h>
 #include "functions.h"
 
+struct Data{
+    int dd;
+    int mm;
+    int yy;
+};
+
+struct Data data;
+
 int main(){
     setlocale(LC_ALL, "Portuguese"); //desse modo podemos imprimir caracteres especiais da língua sem problemas
     initscr();
@@ -14,14 +22,13 @@ int main(){
     curs_set(0);
 
     int entrada = 0;
-    char us = 'a';
-    int alteraMes = 0;
-    int ref = 0, i = 0;
+    int alteraMes;
+    int ref = 0, i;
 
     while(ref==0){
         wclear(stdscr);
         mvaddstr(0,0,"Bem vindo, ser vivo altamente evoluído (ou não) c:");
-        mvaddstr(1,0,"Escolha uma opção para continuarmos:");
+        mvaddstr(1,0,"Escolha uma opção para continuarmos e digite o número correspondente:");
         mvaddstr(2,0,"1. Localizar um dia");
         mvaddstr(3,0,"2. Exibir todos os dias do mês");
         mvaddstr(4,0,"3. Adicionar lembrete(s)");
@@ -31,10 +38,10 @@ int main(){
     
         switch(entrada){
             case '1':
-                mvaddstr(8,0,"Digite uma data (DD MM AAAA)");
+                mvaddstr(8,0,"Digite uma data (DD/MM/AAAA)");
                 echo();
                 curs_set(1);
-                mvscanw(9,0,"%d %d %d", &data.dd, &data.mm, &data.yy);
+                mvscanw(9,0,"%d/%d/%d", &data.dd, &data.mm, &data.yy);
                 noecho();
                 curs_set(0);
                 wclear(stdscr);
@@ -46,23 +53,24 @@ int main(){
                 break;
 
             case '2':
-                mvaddstr(8,0,"Digite o mês e o ano (MM AAAA)");
+                mvaddstr(8,0,"Digite o mês e o ano (MM/AAAA)");
                 echo();
                 curs_set(1);
-                mvscanw(9,0,"%d%d", &data.mm, &data.yy);
+                mvscanw(9,0,"%d/%d", &data.mm, &data.yy);
                 noecho();
                 curs_set(0);
                 while(data.mm<1||data.mm>12){
                     wclear(stdscr);
-                    mvaddstr(0,0,"Entrada inválida! Digite o mês e o ano:");
+                    mvaddstr(0,0,"Entrada inválida! Digite o mês e o ano (MM/AAAA):");
                     echo();
                     curs_set(1);
-                    mvscanw(1,0,"%d%d", &data.mm, &data.yy);
+                    mvscanw(1,0,"%d/%d", &data.mm, &data.yy);
                     noecho();
                     curs_set(0);
                 }
                 wclear(stdscr);
                 print_current_month(data.mm,data.yy);
+                alteraMes = 0;
                 while(alteraMes!='s'){
                     mvaddstr(10,0,"Seta para a esquerda para ver o mês anterior");
                     mvaddstr(11,0,"Seta para a direita para ver o próximo mês");
@@ -70,6 +78,9 @@ int main(){
                     mvaddstr(13,0,"Seta para baixo para ver o ano anterior");
                     mvaddstr(14,0,"Digite \"v\" para ver as notas do mês");
                     mvaddstr(15,0,"Digite \"s\" para voltar ao menu principal");
+                    attron(A_DIM);
+                    mvaddstr(16,0,"(Os dias em negrito possuem lembretes)");
+                    attroff(A_DIM);
                     alteraMes = getch();
                     switch(alteraMes){
                         case KEY_LEFT: decrementar_mes(&data.mm, &data.yy);
@@ -89,7 +100,8 @@ int main(){
                             print_current_month(data.mm, data.yy);
                              break;
                         case 'v': wclear(stdscr);
-                                imprime_note(data.mm, data.yy);
+                                imprime_notes_mes(data.mm, data.yy);
+                                alteraMes = 's';
                                 break;
                         case 's':          
                         case 'S': alteraMes='s';
@@ -101,13 +113,14 @@ int main(){
             case '3': Add_note();
                       break;
             case '4':
+                    wclear(stdscr);
                     mvaddstr(0,0,"Digite uma data (DD/MM/AAAA)");
                     echo();
                     curs_set(1);
                     mvscanw(1,0, "%d/%d/%d", &data.dd, &data.mm, &data.yy);
                     noecho();
                     curs_set(0);
-                    //imprime_note(data.mm, data.yy);
+                    imprime_notes_dia(data.dd, data.mm, data.yy);
                     break;
             case '5': 
                 ref = 1;
