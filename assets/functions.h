@@ -1,29 +1,6 @@
 #ifndef __FUNCTIONS_H__
 #define __FUNCTIONS_H__
 
-typedef struct{
-    int dd;
-    int mm;
-    int yy;
-}Data;
-
-Data data;
-
-typedef struct{
-    int hh;
-    int mm;
-}Hora;
-
-Hora hora;
-
-typedef struct{
-    Data dataL;
-    Hora horaL;
-    char nota[51];
-}Lembrete;
-
-Lembrete L;
-
 /**
  * @brief Função que verifica se um ano é bissexto ou não
  * 
@@ -95,9 +72,32 @@ int dis_semana(int dd, int mm, int aa);
  */
 void Add_note();
 
+/**
+ * @brief Verifica se um dia possui algum lembrete
+ * 
+ * @param dd 
+ * @param mm 
+ * @param yy 
+ * @return int 1 se possuir lembrete, 0 se não
+ */
 int check_note(int dd, int mm, int yy);
 
-void imprime_note(int mm, int yy);
+/**
+ * @brief Imprime todos os lembretes de um determinado mês
+ * 
+ * @param mm 
+ * @param yy 
+ */
+void imprime_notes_mes(int mm, int yy);
+
+/**
+ * @brief Imprime todos os lembretes de um determinado dia
+ * 
+ * @param dd 
+ * @param mm 
+ * @param yy 
+ */
+void imprime_notes_dia(int dd, int mm, int yy);
 
 /**
  * @brief Compara se a data e hora inseridas pelo usuário estão no passado ou futuro
