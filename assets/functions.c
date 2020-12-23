@@ -2,6 +2,29 @@
 #include "functions.h"
 #include <time.h>
 
+struct Data{
+    int dd;
+    int mm;
+    int yy;
+};
+
+struct Data data;
+
+struct Hora{
+    int hh;
+    int mm;
+};
+
+struct Hora hora;
+
+struct Lembrete{
+    struct Data dataL;
+    struct Hora horaL;
+    char nota[51];
+};
+
+struct Lembrete L;
+
 int ano_bissexto(int ano){
     if(ano % 400 == 0 || (ano % 100 != 0 && ano % 4 == 0))
     return 1; // ano bissexto
@@ -131,9 +154,11 @@ void print_current_month(int mm, int yy){
     mvprintw(2,0,"D  S  T  Q  Q  S  S");
     for(i=0;i<6;i++){
         for(j=0;j<7;j++){
+            if(check_note(mes[i][j], mm, yy)==1) attron(A_BOLD);
             if(mes[i][j]==0) mvprintw(i+3,j*3,"x");
             else if(mes[i][j]<10) mvprintw(i+3,j*3,"%d", mes[i][j]);
             else mvprintw(i+3,j*3,"%d", mes[i][j]);
+            attroff(A_BOLD);
         }
     }
 }
@@ -210,10 +235,10 @@ int check_note(int dd, int mm, int yy){
     char nome_arq[8];
     sprintf(nome_arq, "%d.dat", yy);
     p = fopen(nome_arq, "rb");
-    if(p==NULL) mvaddstr(1,0, "Não foi possível abrir o arquivo");
+    if(p==NULL) return 0;
 
     while(fread(&L,sizeof(L),1,p) == 1){
-        if(L.dataL.dd == dd && L.dataL.mm == mm && L.dataL.yy == yy){
+        if(L.dataL.dd == dd && L.dataL.mm == mm){
             fclose(p);
             return 1;
         }
@@ -222,9 +247,9 @@ int check_note(int dd, int mm, int yy){
     return 0;
 }
 
-void imprime_note(int mm, int yy){
+void imprime_notes_mes(int mm, int yy){
     FILE *p;
-    int i = 0, achou = 0;
+    int i = 0, achou = 0, contador = 0;
     char nome_arq[8];
     sprintf(nome_arq, "%d.dat", yy);
     p = fopen(nome_arq, "rb");
@@ -235,7 +260,13 @@ void imprime_note(int mm, int yy){
         mvprintw(0,0,"Erro ao abrir o arquivo");
         return;
     }
-    //mvprintw(1,0,"valor de contador: %d", contador);
+
+    //while(fread(&L, sizeof(L),1,p)==1){
+    //    if(L.dataL.mm==mm) contador++;
+    //}
+
+    //int dias[contador];
+
     i = 0;
     fseek(p, 0, SEEK_SET);
     while(fread(&L, sizeof(L),1,p)==1){
@@ -247,6 +278,43 @@ void imprime_note(int mm, int yy){
         }
     }
     if(achou==0) mvprintw(0,0,"Esse mês não possui nenhum lembrete");
+
+    fclose(p);
+    mvprintw(i,0,"Pressione qualqual tecla para voltar ao menu...");
+    getch();
+}
+
+void imprime_notes_dia(int dd, int mm, int yy){
+    FILE *p;
+    int i = 0, achou = 0, contador = 0;
+    char nome_arq[8];
+    sprintf(nome_arq, "%d.dat", yy);
+    p = fopen(nome_arq, "rb");
+
+    wclear(stdscr);
+
+    if(p==NULL){
+        mvprintw(0,0,"Erro ao abrir o arquivo");
+        return;
+    }
+
+    //while(fread(&L, sizeof(L),1,p)==1){
+    //    if(L.dataL.mm==mm) contador++;
+    //}
+
+    //int dias[contador];
+
+    i = 0;
+    fseek(p, 0, SEEK_SET);
+    while(fread(&L, sizeof(L),1,p)==1){
+        if(L.dataL.dd==dd && L.dataL.mm==mm){
+            if(L.horaL.mm<10) mvprintw(0+i,0,"Nota %d, dia %d, hora %d:0%d: %s", i+1, L.dataL.dd, L.horaL.hh, L.horaL.mm, L.nota);
+            else mvprintw(0+i,0,"Nota %d, dia %d, hora %d:%d: %s", i+1, L.dataL.dd, L.horaL.hh, L.horaL.mm, L.nota);
+            achou = 1;
+            i++;
+        }
+    }
+    if(achou==0) mvprintw(0,0,"Esse dia não possui nenhum lembrete");
 
     fclose(p);
     mvprintw(i,0,"Pressione qualqual tecla para voltar ao menu...");
