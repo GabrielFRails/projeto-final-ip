@@ -226,6 +226,23 @@ int check_note(int dd, int mm, int yy){
     return 0;
 }
 
+int check_noteH(int dd, int mm, int yy, int hh, int min){
+    FILE *p;
+    char nome_arq[8];
+    sprintf(nome_arq, "%d.dat", yy);
+    p = fopen(nome_arq, "rb");
+    if(p==NULL) return 0;
+
+    while(fread(&L,sizeof(L),1,p) == 1){
+        if(L.dataL.dd == dd && L.dataL.mm == mm && L.horaL.hh == hh && L.horaL.mm == min){
+            fclose(p);
+            return 1;
+        }
+    }
+    fclose(p);
+    return 0;
+}
+
 int verica_maiorDia(Lembrete * a, int i, int j){
     if(a[i].dataL.dd > a[j].dataL.dd) return 1; //caso o dia da posição i for maior que o da posição j
     else if(a[i].dataL.dd == a[j].dataL.dd){ //verifica no caso a maior hora
@@ -268,6 +285,7 @@ void imprime_notes_mes(int mm, int yy){
             lembrete[k-1].dataL.mm = L.dataL.mm;
             lembrete[k-1].dataL.yy = L.dataL.yy;
             lembrete[k-1].horaL.hh = L.horaL.hh;
+            lembrete[k-1].horaL.mm = L.horaL.mm;
             memcpy(lembrete[k-1].nota, L.nota, sizeof(L.nota)+1);
             k++;
             ltemp = (Lembrete*) realloc(lembrete, sizeof(Lembrete)*k);
@@ -283,7 +301,9 @@ void imprime_notes_mes(int mm, int yy){
     }
     
     for(i=0; i<k-1; i++){
-        mvprintw(0+i,0,"Nota %d, dia %d, hora %d:0%d: %s", i+1, 
+        if(lembrete[i].horaL.mm<10) mvprintw(0+i,0,"Nota %d, dia %d, hora %d:0%d: %s", i+1, 
+        lembrete[i].dataL.dd, lembrete[i].horaL.hh, lembrete[i].horaL.mm, lembrete[i].nota);
+        else mvprintw(0+i,0,"Nota %d, dia %d, hora %d:%d: %s", i+1, 
         lembrete[i].dataL.dd, lembrete[i].horaL.hh, lembrete[i].horaL.mm, lembrete[i].nota);
     }
 
@@ -307,7 +327,7 @@ void imprime_notes_mes(int mm, int yy){
 
 void imprime_notes_dia(int dd, int mm, int yy){
     FILE *p;
-    int i = 1, achou = 0, contador = 0;
+    int i = 0, achou = 0, contador = 0;
     char nome_arq[8];
     sprintf(nome_arq, "%d.dat", yy);
     p = fopen(nome_arq, "rb");
@@ -365,4 +385,41 @@ int verifica_data_hora_valida(int dd, int mm, int yy, int hh, int min){
     if(min<0 || min>59) return 0;
 
     return 1;
+}
+
+void deleta_lembrete(int dd, int mm, int yy, int hh, int min){
+    FILE * arq, * temp;
+    char nome_arq[8];
+    Lembrete lemb;
+    sprintf(nome_arq, "%d.dat", yy);
+    arq = fopen(nome_arq, "rb");
+
+    if(arq == NULL){
+        mvaddstr(3,0, "Erro ao acessar arquivo!");
+        mvaddstr(4,0, "Pressione qualquer tecla para voltar ao menu");
+        getch();
+        return;
+    }
+
+    if(check_noteH(dd, mm, yy, hh, min)==0){
+        mvaddstr(3,0,"Não existe nenhum lembrete na data e hora inseridas!");
+        mvaddstr(4,0, "Pressione qualquer tecla para voltar ao menu");
+        getch();
+        fclose(arq);
+        return;
+    }
+
+    temp = fopen("temp.dat", "wb");
+
+    while(fread(&lemb, sizeof(lemb), 1, arq) == 1){
+        if(lemb.dataL.dd == dd && lemb.dataL.mm == mm && lemb.horaL.hh == hh && lemb.horaL.mm == min) mvaddstr(3,0, "Nota deletada com sucesso!");
+        else fwrite(&lemb, sizeof(lemb), 1, temp);
+    }
+
+    fclose(arq);
+    fclose(temp);
+    remove(nome_arq);
+    rename("temp.dat", nome_arq);
+    mvaddstr(4,0, "Pressione qualquer tecla para voltar ao menu");
+    getch();
 }
