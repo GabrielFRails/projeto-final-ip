@@ -423,3 +423,71 @@ void deleta_lembrete(int dd, int mm, int yy, int hh, int min){
     mvaddstr(4,0, "Pressione qualquer tecla para voltar ao menu");
     getch();
 }
+
+int veirfy_User(char *user){
+    FILE *p = fopen("users.dat", "rb");
+
+    while(fread(&U, sizeof(U), 1, p) == 1){
+        if(strcmp(U.user, user) == 0) {
+            fclose(p);
+            return 1; ////usuário já cadastrado;
+        } 
+    }
+
+    fclose(p);
+    return 0; //caso não tenha um usuário já cadastrado com esse nome;
+}
+
+void cadastra_User(char *p, char *u){
+    FILE *f = fopen("users.dat", "wb");
+    wclear(stdscr);
+    if(veirfy_User(p) == 1) {
+        mvaddstr(0,1, "Usuário já cadastrado");
+        fclose(f);
+        return;
+    } else{
+        if(fwrite(&U, sizeof(U), 1, f)){
+            mvaddstr(0,0, "Usuário cadastrado com sucesso!");
+        }
+    }
+    fclose(f);
+    mvaddstr(1,0, "Pressione qualquer tecla para prosseguir");
+    getch();
+}
+
+int login(char *p, char *u){
+    FILE *f = fopen("users.dat", "rb");
+    if(f == NULL) return -1;
+
+    while(fread(&U, sizeof(U), 1, f) == 1){
+        if(strcmp(U.user, u) == 0 && strcmp(U.password, p) == 1){
+            fclose(f);
+            return 1; //login com sucesso
+        }
+    }
+    fclose(f);
+    return 0; //não foi possível fazer login
+}
+
+int letras(char r){
+    if((r >= 'a' && r <= 'z') || (r >= 'A' && r <= 'Z')) return 1;
+    else return 0;
+}
+
+void criptografar_password(char *p){
+    int i, size = strlen(p);
+    char tmp;
+
+    for(i=0; p[i] != '\0'; i++)
+        if(letras(p[i])==1) p[i] = (int) p[i]+3;
+    
+    for(i=0; i<size; i++){
+        tmp = p[i];
+        p[i] = p[size-i-1];
+        p[size-i-1] = tmp;
+    }
+
+    for(i=size/2; p[i] != '\0'; i++)
+        p[i] = (int) p[i]-1;
+
+}

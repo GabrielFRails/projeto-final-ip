@@ -1,6 +1,8 @@
 #ifndef __FUNCTIONS_H__
 #define __FUNCTIONS_H__
 
+#define N 21
+
 typedef struct{
     int dd;
     int mm;
@@ -15,6 +17,13 @@ typedef struct {
 }Hora;
 
 Hora hora;
+
+typedef struct{
+    char user[N];
+    char password[N];
+}User;
+
+User U;
 
 typedef struct{
     Data dataL;
@@ -201,5 +210,17 @@ void swap_lembretes(Lembrete * a, int i, int j);
  * @param min 
  */
 void deleta_lembrete(int dd, int mm, int yy, int hh, int min);
+
+void deleta_lembrete(int dd, int mm, int yy, int hh, int min);
+
+void cadastra_User(char *p, char *u);
+
+int veirfy_User(char *user);
+
+int letras(char r);
+
+void criptografar_password(char *p);
+
+int login(char *p, char *u);
 
 #endif
