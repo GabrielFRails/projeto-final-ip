@@ -118,6 +118,18 @@ void Add_note();
 int check_note(int dd, int mm, int yy);
 
 /**
+ * @brief Verifica se um dia possui algum lembrete em uma hora determinada
+ * 
+ * @param dd 
+ * @param mm 
+ * @param yy 
+ * @param hh
+ * @param min
+ * @return int 1 se possuir lembrete, 0 se não
+ */
+int check_noteH(int dd, int mm, int yy, int hh, int min);
+
+/**
  * @brief Imprime todos os lembretes de um determinado mês
  * 
  * @param mm 
@@ -167,7 +179,7 @@ int verifica_data_hora_valida(int dd, int mm, int yy, int hh, int min);
  * @return 1 caso for maior e 0 caso contrário
  */
 
-int verica_maiorDia(Lembrete* a, int i, int j);
+int verica_maiorDia(Lembrete * a, int i, int j);
 
 /**
  * @brief inverte o valor de duas estruturas
@@ -177,6 +189,17 @@ int verica_maiorDia(Lembrete* a, int i, int j);
  * @param j posição j
  */
 
-void swap_lembretes(Lembrete* a, int i, int j);
+void swap_lembretes(Lembrete * a, int i, int j);
+
+/**
+ * @brief Deleta o lembrete correspondente a uma data e hora inserida pelo usuário
+ * 
+ * @param dd 
+ * @param mm 
+ * @param yy 
+ * @param hh 
+ * @param min 
+ */
+void deleta_lembrete(int dd, int mm, int yy, int hh, int min);
 
 #endif
