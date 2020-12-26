@@ -15,27 +15,28 @@ int main(){
 
     int entrada = 0;
     int alteraMes;
-    int ref = 0, i;
+    int ref = 0;
 
     while(ref==0){
         wclear(stdscr);
         mvaddstr(0,0,"Bem vindo, ser vivo altamente evoluído (ou não) c:");
-        mvaddstr(1,0,"Escolha uma opção para continuarmos e digite o número correspondente:");
-        mvaddstr(2,0,"1. Localizar um dia");
-        mvaddstr(3,0,"2. Exibir todos os dias do mês");
+        mvaddstr(1,0,"Escolha uma opção e digite o número correspondente para continuar:");
+        mvaddstr(2,0,"1. Localizar um dia (ver o dia da semana correspondente)");
+        mvaddstr(3,0,"2. Exibir calendário de um mês");
         mvaddstr(4,0,"3. Adicionar lembrete(s)");
         mvaddstr(5,0,"4. Visualizar lembrete(s) de um dia");
         mvaddstr(6,0,"5. Visualizar lembrete(s) de um mês");
-        mvaddstr(7,0,"6. Sair do Programa");
+        mvaddstr(7,0,"6. Deletar um lembrete");
+        mvaddstr(8,0,"7. Sair do programa");
 
         entrada = getch();
     
         switch(entrada){
             case '1':
-                mvaddstr(8,0,"Digite uma data (DD/MM/AAAA)");
+                mvaddstr(9,0,"Digite uma data (DD/MM/AAAA)");
                 echo();
                 curs_set(1);
-                mvscanw(9,0,"%d/%d/%d", &data.dd, &data.mm, &data.yy);
+                mvscanw(10,0,"%d/%d/%d", &data.dd, &data.mm, &data.yy);
                 noecho();
                 curs_set(0);
                 wclear(stdscr);
@@ -47,10 +48,10 @@ int main(){
                 break;
 
             case '2':
-                mvaddstr(8,0,"Digite o mês e o ano (MM/AAAA)");
+                mvaddstr(9,0,"Digite o mês e o ano (MM/AAAA)");
                 echo();
                 curs_set(1);
-                mvscanw(9,0,"%d/%d", &data.mm, &data.yy);
+                mvscanw(10,0,"%d/%d", &data.mm, &data.yy);
                 noecho();
                 curs_set(0);
                 while(data.mm<1||data.mm>12){
@@ -107,24 +108,41 @@ int main(){
             case '3': Add_note();
                       break;
             case '4':
-                    wclear(stdscr);
-                    mvaddstr(0,0,"Digite uma data (DD/MM/AAAA)");
-                    echo();
-                    curs_set(1);
-                    mvscanw(1,0, "%d/%d/%d", &data.dd, &data.mm, &data.yy);
-                    noecho();
-                    curs_set(0);
-                    imprime_notes_dia(data.dd, data.mm, data.yy);
-                    break;
+                wclear(stdscr);
+                mvaddstr(0,0,"Digite uma data (DD/MM/AAAA)");
+                echo();
+                curs_set(1);
+                mvscanw(1,0, "%d/%d/%d", &data.dd, &data.mm, &data.yy);
+                noecho();
+                curs_set(0);
+                imprime_notes_dia(data.dd, data.mm, data.yy);
+                break;
             case '5': 
-                imprime_notes_mes(10, 2021);
+                wclear(stdscr);
+                mvaddstr(0,0,"Digite um mês e ano (MM/AAAA)");
+                echo();
+                curs_set(1);
+                mvscanw(1,0, "%d/%d", &data.mm, &data.yy);
+                noecho();
+                curs_set(0);
+                imprime_notes_mes(data.mm, data.yy);
                 break;
             case '6':
+                wclear(stdscr);
+                mvaddstr(0,0,"Digite a data e hora do lembrete que deseja deletar (DD/MM/AAAA HH:MM)");
+                echo();
+                curs_set(1);
+                mvscanw(1,0, "%d/%d/%d %d:%d", &data.dd, &data.mm, &data.yy, &hora.hh, &hora.mm);
+                noecho();
+                curs_set(0);
+                deleta_lembrete(data.dd, data.mm, data.yy, hora.hh, hora.mm);
+                break;
+            case '7':
                 ref = 1;
                 break;
         }
     }
-    system("clear");
+    wclear(stdscr);
     mvaddstr(0,0,"Obrigado por usar o nosso programa - by: Gabriel & Tallya");
     mvaddstr(2,0,"Pressione uma tecla para encerrar");
     getch();
