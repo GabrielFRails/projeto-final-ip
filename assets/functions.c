@@ -307,17 +307,10 @@ void imprime_notes_mes(int mm, int yy){
         lembrete[i].dataL.dd, lembrete[i].horaL.hh, lembrete[i].horaL.mm, lembrete[i].nota);
     }
 
-    /*i = 0;
-    fseek(p, 0, SEEK_SET);
-    while(fread(&L, sizeof(L),1,p)==1){
-        if(L.dataL.mm==mm){
-            if(L.horaL.mm<10) mvprintw(0+i,0,"Nota %d, dia %d, hora %d:0%d: %s", i+1, L.dataL.dd, L.horaL.hh, L.horaL.mm, L.nota);
-            else mvprintw(0+i,0,"Nota %d, dia %d, hora %d:%d: %s", i+1, L.dataL.dd, L.horaL.hh, L.horaL.mm, L.nota);
-            achou = 1;
-            i++;
-        }
-    }*/
-    if(achou==0) mvprintw(0,0,"Esse mês não possui nenhum lembrete");
+    if(achou==0){
+        mvprintw(0,0,"Esse mês não possui nenhum lembrete");
+        i = 1;
+    }
 
     fclose(p);
     free(lembrete);
@@ -348,7 +341,10 @@ void imprime_notes_dia(int dd, int mm, int yy){
             i++;
         }
     }
-    if(achou==0) mvprintw(0,0,"Esse dia não possui nenhum lembrete");
+    if(achou==0) {
+        mvprintw(0,0,"Esse dia não possui nenhum lembrete");
+        i = 1;
+    }
 
     fclose(p);
     mvprintw(i,0,"Pressione qualqual tecla para voltar ao menu...");
