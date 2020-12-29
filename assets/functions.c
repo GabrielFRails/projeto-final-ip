@@ -435,19 +435,19 @@ int veirfy_User(char *user){
     return 0; //caso não tenha um usuário já cadastrado com esse nome;
 }
 
-void cadastra_User(char *p, char *u){
+void cadastra_User(User * t){
     FILE *f = fopen("user.dat", "ab+");
     wclear(stdscr);
-    if(veirfy_User(u) == 1) {
+    if(veirfy_User(t->user) == 1) {
         mvaddstr(0,0, "Usuário já cadastrado");
-        mvprintw(2,0,"Login: \"%s\" senha: \"%s\"", u, p);
+        mvprintw(2,0,"Login: \"%s\" senha: \"%s\"", t->user, t->password);
         fclose(f);
         mvaddstr(4,0, "Pressione qualquer tecla para prosseguir");
         getch();
     } else{
-        if(fwrite(&U, sizeof(U), 1, f)){
+        if(fwrite(t->user, sizeof(t->user), 1, f) && fwrite(t->password, sizeof(t->password), 1, f)){
             mvaddstr(0,0, "Usuário cadastrado com sucesso!");
-            mvprintw(2,0,"Login: \"%s\" senha: \"%s\"", u, p);
+            mvprintw(2,0,"Login: \"%s\" senha: \"%s\"", t->user, t->password);
             fclose(f);
             mvaddstr(4,0, "Pressione qualquer tecla para prosseguir");
             getch();
@@ -455,13 +455,13 @@ void cadastra_User(char *p, char *u){
     }
 }
 
-int login(char *p, char *u){
+int login(User * t){
     FILE *f = fopen("user.dat", "rb");
     if(f == NULL) return -1;
 
     while(fread(&U, sizeof(U), 1, f) == 1){
-        if(strcmp(U.user, u) == 0){
-            if(strcmp(U.password, p)==0){
+        if(strcmp(U.user, t->user) == 0){
+            if(strcmp(U.password, t->password)==0){
                 fclose(f);
                 return 1;
             }
