@@ -144,7 +144,7 @@ void print_current_month(int mm, int yy){
 
 void Add_note(){
     FILE *p;
-    char nome_arq[8];
+    char nome_arq[20];
     int ano, ch=0;
     L.nota[0] = '\0';
 
@@ -194,7 +194,9 @@ void Add_note(){
         }
         else break;
     }
-    sprintf(nome_arq, "%d.dat", L.dataL.yy);
+    sprintf(nome_arq, "Lembretes/%d_", L.dataL.yy);
+    strcat(nome_arq, U.user);
+    strcat(nome_arq, ".dat");
     p = fopen(nome_arq, "ab+");
     mvaddstr(2,0,"Digite a nota (máx. 50 caracteres): ");
     echo();
@@ -212,13 +214,15 @@ void Add_note(){
 
 int check_note(int dd, int mm, int yy){
     FILE *p;
-    char nome_arq[8];
-    sprintf(nome_arq, "%d.dat", yy);
+    char nome_arq[20];
+    sprintf(nome_arq, "Lembretes/%d_", yy);
+    strcat(nome_arq, U.user);
+    strcat(nome_arq, ".dat");
     p = fopen(nome_arq, "rb");
     if(p==NULL) return 0;
 
     while(fread(&L,sizeof(L),1,p) == 1){
-        if(L.dataL.dd == dd && L.dataL.mm == mm){
+        if((L.dataL.dd == dd && L.dataL.mm == mm)){
             fclose(p);
             return 1;
         }
@@ -229,8 +233,10 @@ int check_note(int dd, int mm, int yy){
 
 int check_noteH(int dd, int mm, int yy, int hh, int min){
     FILE *p;
-    char nome_arq[8];
-    sprintf(nome_arq, "%d.dat", yy);
+    char nome_arq[20];
+    sprintf(nome_arq, "Lembretes/%d_", yy);
+    strcat(nome_arq, U.user);
+    strcat(nome_arq, ".dat");
     p = fopen(nome_arq, "rb");
     if(p==NULL) return 0;
 
@@ -269,8 +275,10 @@ void imprime_notes_mes(int mm, int yy){
     FILE *p;
     int i = 1, j, achou = 0, cont = 0;
     Lembrete * lembrete = (Lembrete*) malloc(sizeof(Lembrete)), *ltemp;
-    char nome_arq[8];
-    sprintf(nome_arq, "%d.dat", yy);
+    char nome_arq[20];
+    sprintf(nome_arq, "Lembretes/%d_", yy);
+    strcat(nome_arq, U.user);
+    strcat(nome_arq, ".dat");
     p = fopen(nome_arq, "rb");
 
     wclear(stdscr);
@@ -322,8 +330,10 @@ void imprime_notes_mes(int mm, int yy){
 void imprime_notes_dia(int dd, int mm, int yy){
     FILE *p;
     int i = 0, achou = 0, contador = 0;
-    char nome_arq[8];
-    sprintf(nome_arq, "%d.dat", yy);
+    char nome_arq[20];
+    sprintf(nome_arq, "Lembretes/%d_", yy);
+    strcat(nome_arq, U.user);
+    strcat(nome_arq, ".dat");
     p = fopen(nome_arq, "rb");
 
     wclear(stdscr);
@@ -386,9 +396,11 @@ int verifica_data_hora_valida(int dd, int mm, int yy, int hh, int min){
 
 void deleta_lembrete(int dd, int mm, int yy, int hh, int min){
     FILE * arq, * temp;
-    char nome_arq[8];
+    char nome_arq[20];
     Lembrete lemb;
-    sprintf(nome_arq, "%d.dat", yy);
+    sprintf(nome_arq, "Lembretes/%d_", yy);
+    strcat(nome_arq, U.user);
+    strcat(nome_arq, ".dat");
     arq = fopen(nome_arq, "rb");
 
     if(arq == NULL){

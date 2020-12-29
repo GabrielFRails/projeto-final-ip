@@ -28,7 +28,7 @@ int main(){
         switch(entrada1){
             case '1':           
                 t = calloc(1, sizeof(User));
-                mvaddstr(3,0,"Digite Usuário e senha");
+                mvaddstr(3,0,"Digite Usuário e senha (máx. 10 caracteres");
                 echo();
                 curs_set(1);
                 mvscanw(4,0,"%s", t->user);

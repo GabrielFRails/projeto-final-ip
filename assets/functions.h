@@ -1,7 +1,7 @@
 #ifndef __FUNCTIONS_H__
 #define __FUNCTIONS_H__
 
-#define N 21
+#define N 11
 
 typedef struct{
     int dd;
@@ -212,16 +212,47 @@ void swap_lembretes(Lembrete * a, int i, int j);
  */
 void deleta_lembrete(int dd, int mm, int yy, int hh, int min);
 
-void deleta_lembrete(int dd, int mm, int yy, int hh, int min);
+/**
+ * @brief cadastra usuário e senha da struct User em um arquivo
+ * 
+ * @param t ponteiro para a estrura a ser salva
+ */
 
 void cadastra_User(User * t);
 
+/**
+ * @brief verifica se um usuário já está cadastrado
+ * 
+ * @param user string a ser verificada
+ * @return int 1 para caso já tenha um usuário cadastrado e 0 caso não tenha
+ */
+
 int veirfy_User(char *user);
+
+/**
+ * @brief realiza o login de um user e senha
+ * 
+ * @param t ponteiro para a estrura a ser verificada
+ * @return int 1 login sucess e 0 caso contrário
+ */
+
+int login(User * t);
+
+/**
+ * @brief verifica se determinada posição de uma string é uma letra
+ * 
+ * @param r posição da string, exemplo str[i]
+ * @return int 1 caso seja uma letra, 0 caso contrário
+ */
 
 int letras(char r);
 
-void criptografar_password(char *p);
+/**
+ * @brief criptografa uma string
+ * 
+ * @param p ponteiro para o início de uma string
+ */
 
-int login(User * t);
+void criptografar_password(char *p);
 
 #endif
