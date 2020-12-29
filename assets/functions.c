@@ -146,6 +146,7 @@ void Add_note(){
     FILE *p;
     char nome_arq[8];
     int ano, ch=0;
+    L.nota[0] = '\0';
 
     wclear(stdscr);
     mvaddstr(0,0,"Digite uma data e hora (DD/MM/AAAA HH:MM)");
@@ -421,7 +422,7 @@ void deleta_lembrete(int dd, int mm, int yy, int hh, int min){
 }
 
 int veirfy_User(char *user){
-    FILE *p = fopen("users.dat", "rb");
+    FILE *p = fopen("user.dat", "rb");
 
     while(fread(&U, sizeof(U), 1, p) == 1){
         if(strcmp(U.user, user) == 0) {
@@ -435,30 +436,35 @@ int veirfy_User(char *user){
 }
 
 void cadastra_User(char *p, char *u){
-    FILE *f = fopen("users.dat", "wb");
+    FILE *f = fopen("user.dat", "ab+");
     wclear(stdscr);
-    if(veirfy_User(p) == 1) {
-        mvaddstr(0,1, "Usuário já cadastrado");
+    if(veirfy_User(u) == 1) {
+        mvaddstr(0,0, "Usuário já cadastrado");
+        mvprintw(2,0,"Login: \"%s\" senha: \"%s\"", u, p);
         fclose(f);
-        return;
+        mvaddstr(4,0, "Pressione qualquer tecla para prosseguir");
+        getch();
     } else{
         if(fwrite(&U, sizeof(U), 1, f)){
             mvaddstr(0,0, "Usuário cadastrado com sucesso!");
+            mvprintw(2,0,"Login: \"%s\" senha: \"%s\"", u, p);
+            fclose(f);
+            mvaddstr(4,0, "Pressione qualquer tecla para prosseguir");
+            getch();
         }
     }
-    fclose(f);
-    mvaddstr(1,0, "Pressione qualquer tecla para prosseguir");
-    getch();
 }
 
 int login(char *p, char *u){
-    FILE *f = fopen("users.dat", "rb");
+    FILE *f = fopen("user.dat", "rb");
     if(f == NULL) return -1;
 
     while(fread(&U, sizeof(U), 1, f) == 1){
-        if(strcmp(U.user, u) == 0 && strcmp(U.password, p) == 1){
-            fclose(f);
-            return 1; //login com sucesso
+        if(strcmp(U.user, u) == 0){
+            if(strcmp(U.password, p)==0){
+                fclose(f);
+                return 1;
+            }
         }
     }
     fclose(f);

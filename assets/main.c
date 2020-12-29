@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <locale.h>
 #include <ncurses.h>
+#include <string.h>
 #include "functions.h"
 
 int main(){
@@ -13,9 +14,56 @@ int main(){
     cbreak();
     curs_set(0);
 
-    int entrada = 0;
-    int alteraMes;
-    int ref = 0;
+    int entrada = 0, entrada1 = 0;
+    int alteraMes, i;
+    int ref = 0, ref1 = 0;
+
+    /*while(ref1==0){
+        wclear(stdscr);
+        mvaddstr(0,0,"Bem vindo, selecione uma opção");
+        mvaddstr(1,0,"1.Fazer Login");
+        mvaddstr(2,0,"2.Cadastrar usuário");
+
+        entrada1 = getch();
+
+        switch(entrada1){
+            case '1':           
+                t = malloc(sizeof(User));
+                mvaddstr(3,0,"Digite Usuário e senha");
+                echo();
+                curs_set(1);
+                mvscanw(4,0," %[^\n]", U.user);
+                mvscanw(5,0," %[^\n]", U.password);
+                noecho();
+                curs_set(0);
+                if(login(U.password, U.user)==1){
+                    mvaddstr(6,0,"Login sucess, digite qualquer tecla para continuar");
+                    mvprintw(7,0,"Login: \"%s\" senha: \"%s\"", U.user, U.password);
+                    
+                    getch();
+                    ref1 = 1;
+                }else{
+                    mvaddstr(6,0,"Login fail");
+                    mvprintw(7,0,"Login: \"%s\" senha: \"%s\"", U.user, U.password);
+                    getch();
+                    ref1 = 1;
+                }
+                free(t);
+                break;
+            case '2':
+                t = malloc(sizeof(User));
+                mvaddstr(3,0,"Digite Usuário e senha");
+                echo();
+                curs_set(1);
+                mvscanw(4,0," %[^\n]", t->user);
+                mvscanw(5,0," %[^\n]", t->password);
+                noecho();
+                curs_set(0);
+                cadastra_User(t->password, t->user);
+                free(t);
+                break;
+        }
+    }*/
 
     while(ref==0){
         wclear(stdscr);

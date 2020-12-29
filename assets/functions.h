@@ -23,12 +23,13 @@ typedef struct{
     char password[N];
 }User;
 
-User U;
+User U, *t;
 
 typedef struct{
     Data dataL;
     Hora horaL;
     char nota[51];
+    User userL;
 }Lembrete;
 
 Lembrete L;
