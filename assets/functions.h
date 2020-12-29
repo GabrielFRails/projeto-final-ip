@@ -214,7 +214,7 @@ void deleta_lembrete(int dd, int mm, int yy, int hh, int min);
 
 void deleta_lembrete(int dd, int mm, int yy, int hh, int min);
 
-void cadastra_User(char *p, char *u);
+void cadastra_User(User * t);
 
 int veirfy_User(char *user);
 
@@ -222,6 +222,6 @@ int letras(char r);
 
 void criptografar_password(char *p);
 
-int login(char *p, char *u);
+int login(User * t);
 
 #endif
