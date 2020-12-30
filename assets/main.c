@@ -17,7 +17,7 @@ int main(){
     int entrada = 0, entrada1;
     int alteraMes;
     int ref = 0, ref1 = 0;
-
+    char senha[12];
     while(ref1==0){
         entrada1 = 0;
         wclear(stdscr);
@@ -33,11 +33,13 @@ int main(){
                 curs_set(1);
                 mvscanw(4,0,"%s", t->user);
                 mvscanw(5,0,"%s", t->password);
+                strcpy(senha, t->password);
+                criptografar_password(t->password);
                 noecho();
                 curs_set(0);
                 if(login(t)==1){
                     mvaddstr(6,0,"Login sucess, digite qualquer tecla para continuar");
-                    mvprintw(7,0,"Login: \"%s\" senha: \"%s\"", U.user, U.password);
+                    mvprintw(7,0,"Login: \"%s\" senha: \"%s\"", U.user, senha);
                     getch();
                     ref1 = 1;
                 }else{

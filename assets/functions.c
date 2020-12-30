@@ -450,21 +450,25 @@ int veirfy_User(char *user){
 void cadastra_User(User * t){
     FILE *f = fopen("user.dat", "ab+");
     wclear(stdscr);
+    User *temp = malloc(sizeof(User));
+    strcpy(temp->password, t->password);
+    criptografar_password(t->password);
     if(veirfy_User(t->user) == 1) {
         mvaddstr(0,0, "Usuário já cadastrado");
-        mvprintw(2,0,"Login: \"%s\" senha: \"%s\"", t->user, t->password);
+        mvprintw(2,0,"Login: \"%s\" senha: \"%s\"", t->user, temp->password);
         fclose(f);
         mvaddstr(4,0, "Pressione qualquer tecla para prosseguir");
         getch();
     } else{
         if(fwrite(t->user, sizeof(t->user), 1, f) && fwrite(t->password, sizeof(t->password), 1, f)){
             mvaddstr(0,0, "Usuário cadastrado com sucesso!");
-            mvprintw(2,0,"Login: \"%s\" senha: \"%s\"", t->user, t->password);
+            mvprintw(2,0,"Login: \"%s\" senha: \"%s\"", t->user, temp->password);
             fclose(f);
             mvaddstr(4,0, "Pressione qualquer tecla para prosseguir");
             getch();
         }
     }
+    free(temp);
 }
 
 int login(User * t){
