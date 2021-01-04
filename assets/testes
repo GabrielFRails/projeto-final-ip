@@ -1,0 +1,2 @@
+gcc main.c functions.c -o main -lncurses 
+./main
