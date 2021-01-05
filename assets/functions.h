@@ -90,7 +90,7 @@ void decrementar_ano(int *yy);
  * @param mm (Mês a ser impresso)
  * @param yy (Ano ao qual o mês a ser impresso pertence)
  */
-void print_current_month(int mm, int yy);
+void print_current_month(WINDOW * win, int mm, int yy);
 
 /**
  * @brief Função que verifica qual dia da semana corresponde a uma determinada data,
@@ -115,7 +115,7 @@ int dis_semana(int dd, int mm, int aa);
  * @brief Adiciona um lembrete
  * 
  */
-void Add_note();
+void Add_note(WINDOW * win);
 
 /**
  * @brief Verifica se um dia possui algum lembrete
@@ -144,8 +144,9 @@ int check_noteH(int dd, int mm, int yy, int hh, int min);
  * 
  * @param mm 
  * @param yy 
+ * @param flag indica se a função precisa esperar que o usuário digite um caracter antes de encerrar (1) ou não (0)
  */
-void imprime_notes_mes(int mm, int yy);
+void imprime_notes_mes(WINDOW * win, int mm, int yy, int flag);
 
 /**
  * @brief Imprime todos os lembretes de um determinado dia
@@ -154,7 +155,7 @@ void imprime_notes_mes(int mm, int yy);
  * @param mm 
  * @param yy 
  */
-void imprime_notes_dia(int dd, int mm, int yy);
+void imprime_notes_dia(WINDOW * win, int dd, int mm, int yy);
 
 /**
  * @brief Compara se a data e hora inseridas pelo usuário estão no passado ou futuro
@@ -210,7 +211,7 @@ void swap_lembretes(Lembrete * a, int i, int j);
  * @param hh 
  * @param min 
  */
-void deleta_lembrete(int dd, int mm, int yy, int hh, int min);
+void deleta_lembrete(WINDOW * win, int dd, int mm, int yy, int hh, int min);
 
 /**
  * @brief cadastra usuário e senha da struct User em um arquivo
@@ -218,7 +219,7 @@ void deleta_lembrete(int dd, int mm, int yy, int hh, int min);
  * @param t ponteiro para a estrura a ser salva
  */
 
-void cadastra_User(User * t);
+void cadastra_User(WINDOW * win, User * t);
 
 /**
  * @brief verifica se um usuário já está cadastrado
