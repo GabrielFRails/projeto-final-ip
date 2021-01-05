@@ -3,6 +3,7 @@
 #include <time.h>
 #include <stdlib.h>
 #include <string.h>
+#include <locale.h>
 
 int ano_bissexto(int ano){
     if(ano % 400 == 0 || (ano % 100 != 0 && ano % 4 == 0))
@@ -80,7 +81,9 @@ void decrementar_ano(int *yy){
     if(*yy > 2100) (*yy) = 2100;
 }
 
-void print_current_month(int mm, int yy){
+void print_current_month(WINDOW * win, int mm, int yy){
+    init_pair(1, COLOR_YELLOW, COLOR_BLACK);
+    setlocale(LC_ALL, "Portuguese");
     int mes[6][7];
     int dia1, nDias, i, j, k;
     dia1 = dis_semana(1,mm,yy);
@@ -102,92 +105,117 @@ void print_current_month(int mm, int yy){
             i++;
         }
     }
-    printf("\n");
-    mvprintw(0,0,"Mês: %d  Ano: %d", mm, yy);
+
+    mvwprintw(win,1,1,"Mês: %d Ano: %d", mm, yy);
     switch(mm){
-        case 1: mvprintw(1,0,"Janeiro");
+        case 1: mvwprintw(win,2,3,"Janeiro");
                 break;
-        case 2: mvprintw(1,0,"Fevereiro");
+        case 2: mvwprintw(win,2,3,"Fevereiro");
                 break;
-        case 3: mvprintw(1,0,"Março");
+        case 3: mvwprintw(win,2,3,"Março");
                 break;
-        case 4: mvprintw(1,0,"Abril");
+        case 4: mvwprintw(win,2,3,"Abril");
                 break;
-        case 5: mvprintw(1,0,"Maio");
+        case 5: mvwprintw(win,2,3,"Maio");
                 break;
-        case 6: mvprintw(1,0,"Junho");
+        case 6: mvwprintw(win,2,3,"Junho");
                 break;
-        case 7: mvprintw(1,0,"Julho");
+        case 7: mvwprintw(win,2,3,"Julho");
                 break;
-        case 8: mvprintw(1,0,"Agosto");
+        case 8: mvwprintw(win,2,3,"Agosto");
                 break;
-        case 9: mvprintw(1,0,"Setembro");
+        case 9: mvwprintw(win,2,3,"Setembro");
                 break;
-        case 10: mvprintw(1,0,"Outubro");
+        case 10: mvwprintw(win,2,3,"Outubro");
                 break;
-        case 11: mvprintw(1,0,"Novembro");
+        case 11: mvwprintw(win,2,3,"Novembro");
                 break;
-        case 12: mvprintw(1,0,"Dezembro");
+        case 12: mvwprintw(win,2,3,"Dezembro");
                 break;
     }
-    mvprintw(2,0,"D  S  T  Q  Q  S  S");
+    wattron(win, A_BOLD);
+    wattron(win, COLOR_PAIR(1));
+    mvwprintw(win,3,3,"D  S  T  Q  Q  S  S");
+    wattroff(win, A_BOLD);
+    wattroff(win, COLOR_PAIR(1));
     for(i=0;i<6;i++){
         for(j=0;j<7;j++){
-            if(check_note(mes[i][j], mm, yy)==1) attron(A_BOLD);
-            if(mes[i][j]==0) mvprintw(i+3,j*3,"x");
-            else if(mes[i][j]<10) mvprintw(i+3,j*3,"%d", mes[i][j]);
-            else mvprintw(i+3,j*3,"%d", mes[i][j]);
-            attroff(A_BOLD);
+            if(check_note(mes[i][j], mm, yy)==1){
+                wattron(win, A_BOLD);
+                wattron(win, COLOR_PAIR(1));
+            }
+            if(mes[i][j]==0){
+                wattron(win, A_DIM);
+                wattron(win, COLOR_PAIR(1));
+                mvwprintw(win,i+4,j*3+3,"x");
+                wattroff(win, A_DIM);
+                wattron(win, COLOR_PAIR(1));
+            } 
+            else if(mes[i][j]<10) mvwprintw(win,i+4,j*3+3,"%d", mes[i][j]);
+            else mvwprintw(win,i+4,j*3+3,"%d", mes[i][j]);
+            wattroff(win, A_BOLD);
+            wattroff(win, COLOR_PAIR(1));
         }
     }
+    wrefresh(win);
 }
 
-void Add_note(){
+void Add_note(WINDOW * win){
     FILE *p;
     char nome_arq[30];
     int ano, ch=0;
     L.nota[0] = '\0';
 
-    wclear(stdscr);
-    mvaddstr(0,0,"Digite uma data e hora (DD/MM/AAAA HH:MM)");
+    wclear(win);
+    box(win,0,0);
+    wrefresh(win);
+    mvwaddstr(win,1,1,"Digite uma data e hora (DD/MM/AAAA HH:MM)");
     echo();
     curs_set(1);
-    mvscanw(1,0, "%d/%d/%d %d:%d", &L.dataL.dd, &L.dataL.mm, &L.dataL.yy, &L.horaL.hh, &L.horaL.mm);
+    mvwscanw(win,2,1, "%d/%d/%d %d:%d", &L.dataL.dd, &L.dataL.mm, &L.dataL.yy, &L.horaL.hh, &L.horaL.mm);
     curs_set(0);
     noecho();
     while(1){
         //verifica se a data e a hora são válidas
         if(verifica_data_hora_valida(L.dataL.dd, L.dataL.mm, L.dataL.yy, L.horaL.hh, L.horaL.mm)==0){
-            wclear(stdscr);
-            mvaddstr(0,0,"Data/hora inválida!");
-            mvaddstr(1,0,"Pressione 't' para inserir data e hora novamente ou 'v' para voltar ao menu.");
+            wclear(win);
+            box(win,0,0);
+            mvwaddstr(win,1,1,"Data/hora inválida!");
+            mvwaddstr(win,2,1,"Pressione 't' para inserir data e hora novamente ou 'v' para voltar ao menu.");
+            wrefresh(win);
             ch=0;
             while(ch!='t' && ch!='v') ch = getch();
             if(ch=='v') return;
             else{
-                wclear(stdscr);
-                mvprintw(0,0,"Insira uma data/hora válida (DD/MM/AAAA HH:MM): ");
+                wclear(win);
+                box(win,0,0);
+                wrefresh(win);
+                mvwprintw(win,1,1,"Insira uma data/hora válida (DD/MM/AAAA HH:MM): ");
                 echo();
                 curs_set(1);
-                mvscanw(1,0,"%d/%d/%d %d:%d", &L.dataL.dd, &L.dataL.mm, &L.dataL.yy, &L.horaL.hh, &L.horaL.mm);
+                mvwscanw(win,2,1,"%d/%d/%d %d:%d", &L.dataL.dd, &L.dataL.mm, &L.dataL.yy, &L.horaL.hh, &L.horaL.mm);
                 curs_set(0);
                 noecho();
             }
         } 
         //verifica se a data e a hora estão ou não no passado
         else if(compara_data_hora(L.dataL.dd, L.dataL.mm, L.dataL.yy, L.horaL.hh, L.horaL.mm)==0){
-            wclear(stdscr);
-            mvaddstr(0,0, "Não é possível criar lembrete em uma data/hora passada!");
-            mvaddstr(1,0,"Pressione 't' para inserir data e hora novamente ou 'v' para voltar ao menu.");
+            wclear(win);
+            box(win,0,0);
+            mvwaddstr(win,1,1, "Não é possível criar lembrete em uma data/hora passada!");
+            mvwaddstr(win,2,1,"Pressione 't' para inserir data e hora novamente ou 'v' para voltar ao menu.");
+            wrefresh(win);
             ch=0;
             while(ch!='t' && ch!='v') ch = getch();
             if(ch=='v') return;
             else{
-                wclear(stdscr);
-                mvprintw(0,0,"Insira uma data/hora válida (DD/MM/AAAA HH:MM): ");
+                wclear(win);
+                box(win,0,0);
+                wrefresh(win);
+                mvwprintw(win,1,1,"Insira uma data/hora válida (DD/MM/AAAA HH:MM): ");
                 echo();
                 curs_set(1);
-                mvscanw(1,0,"%d/%d/%d %d:%d", &L.dataL.dd, &L.dataL.mm, &L.dataL.yy, &L.horaL.hh, &L.horaL.mm);
+                mvwscanw(win,2,1,"%d/%d/%d %d:%d", &L.dataL.dd, &L.dataL.mm, &L.dataL.yy, &L.horaL.hh, &L.horaL.mm);
                 curs_set(0);
                 noecho();
             }
@@ -198,17 +226,22 @@ void Add_note(){
     strcat(nome_arq, U.user);
     strcat(nome_arq, ".dat");
     p = fopen(nome_arq, "ab+");
-    mvaddstr(2,0,"Digite a nota (máx. 50 caracteres): ");
+    mvwaddstr(win,3,1,"Digite a nota (máx. 50 caracteres): ");
     echo();
     curs_set(1);
-    mvscanw(3,0, "%[^\n]", L.nota);
+    mvwscanw(win,4,1, "%[^\n]", L.nota);
     curs_set(0);
     noecho();
     if(fwrite(&L, sizeof(L), 1, p)){
-        mvaddstr(5,0, "Nota salva com sucesso!");
+        mvwaddstr(win,6,1, "Nota salva com sucesso!");
+        wrefresh(win);
         fclose(p);
-    } else mvaddstr(5,0, "Erro ao salvar a nota!");
-    mvprintw(7,0,"Pressione qualquer tecla para voltar ao menu...");
+    } else {
+        mvwaddstr(win,6,1, "Erro ao salvar a nota!");
+        wrefresh(win);
+    } 
+    mvwprintw(win,8,1,"Pressione qualquer tecla para voltar ao menu...");
+    wrefresh(win);
     getch();
 }
 
@@ -271,7 +304,7 @@ void swap_lembretes(Lembrete* a, int i, int j){
     free(aux);
 }
 
-void imprime_notes_mes(int mm, int yy){
+void imprime_notes_mes(WINDOW * win, int mm, int yy, int flag){
     FILE *p;
     int i = 1, j, achou = 0, cont = 0;
     Lembrete * lembrete = (Lembrete*) malloc(sizeof(Lembrete)), *ltemp;
@@ -281,10 +314,10 @@ void imprime_notes_mes(int mm, int yy){
     strcat(nome_arq, ".dat");
     p = fopen(nome_arq, "rb");
 
-    wclear(stdscr);
-
     if(p==NULL){
-        mvprintw(0,0,"Erro ao abrir o arquivo");
+        mvwprintw(win,1,1,"Erro ao abrir o arquivo");
+        free(lembrete);
+        wrefresh(win);
         return;
     }
     int k = 1;
@@ -310,24 +343,29 @@ void imprime_notes_mes(int mm, int yy){
     }
     
     for(i=0; i<k-1; i++){
-        if(lembrete[i].horaL.mm<10) mvprintw(0+i,0,"Nota %d, dia %d, hora %d:0%d: %s", i+1, 
+        if(lembrete[i].horaL.mm<10) mvwprintw(win, 1+i,1,"Nota %d, dia %d, hora %d:0%d: %s", i+1, 
         lembrete[i].dataL.dd, lembrete[i].horaL.hh, lembrete[i].horaL.mm, lembrete[i].nota);
-        else mvprintw(0+i,0,"Nota %d, dia %d, hora %d:%d: %s", i+1, 
+        else mvwprintw(win, 1+i,1,"Nota %d, dia %d, hora %d:%d: %s", i+1, 
         lembrete[i].dataL.dd, lembrete[i].horaL.hh, lembrete[i].horaL.mm, lembrete[i].nota);
     }
 
     if(achou==0){
-        mvprintw(0,0,"Esse mês não possui nenhum lembrete");
+        mvwprintw(win, 1,1,"Esse mês não possui nenhum lembrete");
         i = 1;
     }
 
     fclose(p);
     free(lembrete);
-    mvprintw(i,0,"Pressione qualqual tecla para voltar ao menu...");
-    getch();
+    wrefresh(win);
+    if(flag==1){
+        mvwaddstr(win,3+i,1,"Pressione qualquer tecla para voltar ao menu.");
+        wrefresh(win);
+        getch();
+    }
 }
 
-void imprime_notes_dia(int dd, int mm, int yy){
+void imprime_notes_dia(WINDOW * win, int dd, int mm, int yy){
+    init_pair(1, COLOR_YELLOW, COLOR_BLACK);
     FILE *p;
     int i = 0, achou = 0, contador = 0;
     char nome_arq[30];
@@ -336,29 +374,38 @@ void imprime_notes_dia(int dd, int mm, int yy){
     strcat(nome_arq, ".dat");
     p = fopen(nome_arq, "rb");
 
-    wclear(stdscr);
+    wclear(win);
+    wattron(win, COLOR_PAIR(1));
+    box(win,0,0);
+    wattroff(win, COLOR_PAIR(1));
+    wrefresh(win);
 
     if(p==NULL){
-        mvprintw(0,0,"Erro ao abrir o arquivo");
+        mvwprintw(win,1,1,"Erro ao abrir o arquivo");
+        mvwaddstr(win,2,1, "Pressione qualquer tecla para voltar ao menu");
+        getch();
         return;
     }
 
     fseek(p, 0, SEEK_SET);
     while(fread(&L, sizeof(L),1,p)==1){
         if(L.dataL.dd==dd && L.dataL.mm==mm){
-            if(L.horaL.mm<10) mvprintw(0+i,0,"Nota %d, dia %d, hora %d:0%d: %s", i+1, L.dataL.dd, L.horaL.hh, L.horaL.mm, L.nota);
-            else mvprintw(0+i,0,"Nota %d, dia %d, hora %d:%d: %s", i+1, L.dataL.dd, L.horaL.hh, L.horaL.mm, L.nota);
+            if(L.horaL.mm<10) mvwprintw(win,1+i,1,"Nota %d, dia %d, hora %d:0%d: %s", i+1, L.dataL.dd, L.horaL.hh, L.horaL.mm, L.nota);
+            else mvwprintw(win,1+i,1,"Nota %d, dia %d, hora %d:%d: %s", i+1, L.dataL.dd, L.horaL.hh, L.horaL.mm, L.nota);
             achou = 1;
             i++;
+            wrefresh(win);
         }
     }
     if(achou==0) {
-        mvprintw(0,0,"Esse dia não possui nenhum lembrete");
+        mvprintw(1,1,"Esse dia não possui nenhum lembrete");
+        wrefresh(win);
         i = 1;
     }
 
     fclose(p);
-    mvprintw(i,0,"Pressione qualqual tecla para voltar ao menu...");
+    mvprintw(1+i,1,"Pressione qualquer tecla para voltar ao menu...");
+    wrefresh(win);
     getch();
 }
 
@@ -394,7 +441,7 @@ int verifica_data_hora_valida(int dd, int mm, int yy, int hh, int min){
     return 1;
 }
 
-void deleta_lembrete(int dd, int mm, int yy, int hh, int min){
+void deleta_lembrete(WINDOW * win, int dd, int mm, int yy, int hh, int min){
     FILE * arq, * temp;
     char nome_arq[30];
     Lembrete lemb;
@@ -404,15 +451,17 @@ void deleta_lembrete(int dd, int mm, int yy, int hh, int min){
     arq = fopen(nome_arq, "rb");
 
     if(arq == NULL){
-        mvaddstr(3,0, "Erro ao acessar arquivo!");
-        mvaddstr(4,0, "Pressione qualquer tecla para voltar ao menu");
+        mvwaddstr(win,4,1, "Erro ao acessar arquivo!");
+        mvwaddstr(win,5,1, "Pressione qualquer tecla para voltar ao menu");
+        wrefresh(win);
         getch();
         return;
     }
 
     if(check_noteH(dd, mm, yy, hh, min)==0){
-        mvaddstr(3,0,"Não existe nenhum lembrete na data e hora inseridas!");
-        mvaddstr(4,0, "Pressione qualquer tecla para voltar ao menu");
+        mvwaddstr(win,4,1,"Não existe nenhum lembrete na data e hora inseridas!");
+        mvwaddstr(win,5,1, "Pressione qualquer tecla para voltar ao menu");
+        wrefresh(win);
         getch();
         fclose(arq);
         return;
@@ -421,7 +470,10 @@ void deleta_lembrete(int dd, int mm, int yy, int hh, int min){
     temp = fopen("temp.dat", "wb");
 
     while(fread(&lemb, sizeof(lemb), 1, arq) == 1){
-        if(lemb.dataL.dd == dd && lemb.dataL.mm == mm && lemb.horaL.hh == hh && lemb.horaL.mm == min) mvaddstr(3,0, "Nota deletada com sucesso!");
+        if(lemb.dataL.dd == dd && lemb.dataL.mm == mm && lemb.horaL.hh == hh && lemb.horaL.mm == min){
+            mvaddstr(4,1, "Nota deletada com sucesso!");
+            wrefresh(win);
+        } 
         else fwrite(&lemb, sizeof(lemb), 1, temp);
     }
 
@@ -429,7 +481,8 @@ void deleta_lembrete(int dd, int mm, int yy, int hh, int min){
     fclose(temp);
     remove(nome_arq);
     rename("temp.dat", nome_arq);
-    mvaddstr(4,0, "Pressione qualquer tecla para voltar ao menu");
+    mvwaddstr(win,5,1, "Pressione qualquer tecla para voltar ao menu");
+    wrefresh(win);
     getch();
 }
 
@@ -447,24 +500,29 @@ int veirfy_User(char *user){
     return 0; //caso não tenha um usuário já cadastrado com esse nome;
 }
 
-void cadastra_User(User * t){
+void cadastra_User(WINDOW * win, User * t){
     FILE *f = fopen("user.dat", "ab+");
-    wclear(stdscr);
     User *temp = malloc(sizeof(User));
     strcpy(temp->password, t->password);
     criptografar_password(t->password);
+
+    wclear(win);
+    box(win,0,0);
+    wrefresh(win);
     if(veirfy_User(t->user) == 1) {
-        mvaddstr(0,0, "Usuário já cadastrado");
-        mvprintw(2,0,"Login: \"%s\" senha: \"%s\"", t->user, temp->password);
+        mvwaddstr(win,1,1, "Usuário já cadastrado!");
+        //mvwprintw(win,3,1,"Login: \"%s\" senha: \"%s\"", t->user, temp->password);
         fclose(f);
-        mvaddstr(4,0, "Pressione qualquer tecla para prosseguir");
+        mvwaddstr(win,5,1, "Pressione qualquer tecla para prosseguir");
+        wrefresh(win);
         getch();
     } else{
         if(fwrite(t->user, sizeof(t->user), 1, f) && fwrite(t->password, sizeof(t->password), 1, f)){
-            mvaddstr(0,0, "Usuário cadastrado com sucesso!");
-            mvprintw(2,0,"Login: \"%s\" senha: \"%s\"", t->user, temp->password);
+            mvwaddstr(win,1,1, "Usuário cadastrado com sucesso!");
+            mvwprintw(win,3,1,"Login: \"%s\" senha: \"%s\"", t->user, temp->password);
             fclose(f);
-            mvaddstr(4,0, "Pressione qualquer tecla para prosseguir");
+            mvwaddstr(win,5,1, "Pressione qualquer tecla para prosseguir");
+            wrefresh(win);
             getch();
         }
     }
@@ -507,5 +565,4 @@ void criptografar_password(char *p){
 
     for(i=size/2; p[i] != '\0'; i++)
         p[i] = (int) p[i]-1;
-
 }
